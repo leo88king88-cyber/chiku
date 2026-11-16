@@ -5,7 +5,7 @@ import { ChoiceChips } from '../../components/ui/ChoiceChips'
 import { Switch } from '../../components/ui/Switch'
 import { formatINR } from '../../lib/money'
 import { useDraftChild, useStore } from '../../store'
-import { ageBandInfo } from '../../store/presets'
+import { ageBandInfo, controlWhy } from '../../store/presets'
 import { useToast } from '../../store/toast'
 import type { Controls as C, NotifySpends } from '../../store/types'
 import { OnboardingLayout } from './OnboardingLayout'
@@ -95,6 +95,16 @@ export function Controls() {
           </div>
           <p className="t-caption rounded-xl bg-paper-deep px-3 py-2 text-ink-soft">🔒 Investing always needs your approval. This can't be turned off.</p>
         </div>
+      )}
+      {!editing && (
+        <details className="sticker px-4 py-2">
+          <summary className="flex min-h-11 cursor-pointer items-center font-bold">Why these settings?</summary>
+          <ul className="t-body flex flex-col gap-2 pb-2 text-ink-soft">
+            <li><b className="text-ink">Limit.</b> {controlWhy[child.ageBand].limit}</li>
+            <li><b className="text-ink">Approvals.</b> {controlWhy[child.ageBand].approvals}</li>
+            <li><b className="text-ink">Alerts.</b> {controlWhy[child.ageBand].alerts}</li>
+          </ul>
+        </details>
       )}
     </OnboardingLayout>
   )

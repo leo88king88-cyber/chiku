@@ -18,3 +18,22 @@ export const ageBandInfo: Record<AgeBand, { label: string; tag: string; blurb: s
   '12-14': { label: '12 to 14', tag: 'Teen', blurb: 'Cleaner look, their own spend/save/share split.', emoji: '👧' },
   '15-17': { label: '15 to 17', tag: 'Almost grown-up', blurb: 'Near-adult app, real investing with your approval.', emoji: '🧑' },
 }
+
+/** One plain-language line per control, tuned to the age band. */
+export const controlWhy: Record<AgeBand, { limit: string; approvals: string; alerts: string }> = {
+  '8-11': {
+    limit: 'Most 9-year-olds spend ₹200 to ₹400 a month, mostly on small treats.',
+    approvals: 'Young kids learn best when you say yes together, so you see every purchase.',
+    alerts: 'You get a ping for every spend. At this age that is a handful a month.',
+  },
+  '12-14': {
+    limit: 'Enough for snacks and small buys, with room to start saving for something bigger.',
+    approvals: 'Everyday spending is theirs. You step in only for the big ones.',
+    alerts: 'Only large spends ping you, so you are not nagging.',
+  },
+  '15-17': {
+    limit: 'Close to a real budget, so they practise before they turn 18.',
+    approvals: 'Most decisions are theirs. You approve big purchases and anything to do with investing.',
+    alerts: 'Only large spends ping you. Your weekly summary covers the rest.',
+  },
+}

@@ -31,6 +31,7 @@ export interface Child {
   pocketMoney: PocketMoney | null
   inviteCode: string
   inviteStatus: 'sent' | 'accepted'
+  avatar?: string
 }
 
 export interface Guardian {

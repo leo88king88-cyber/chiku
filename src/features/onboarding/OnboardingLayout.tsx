@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export function OnboardingLayout({
@@ -16,6 +16,11 @@ export function OnboardingLayout({
   backTo?: string
 }) {
   const navigate = useNavigate()
+  const main = useRef<HTMLElement>(null)
+  // Move focus to the new step so screen-reader and keyboard users start at the top.
+  useEffect(() => {
+    main.current?.focus({ preventScroll: true })
+  }, [])
   return (
     <div className="flex min-h-full flex-col">
       <header className="flex items-center gap-3 px-3 pt-3">
@@ -40,10 +45,12 @@ export function OnboardingLayout({
         <span className="w-11" />
       </header>
       <motion.main
+        ref={main}
+        tabIndex={-1}
         initial={{ opacity: 0, x: 16 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.2 }}
-        className="flex flex-1 flex-col gap-[var(--gap)] px-5 pb-4 pt-4"
+        className="flex flex-1 flex-col gap-[var(--gap)] px-5 pb-4 pt-4 outline-none"
       >
         {children}
       </motion.main>

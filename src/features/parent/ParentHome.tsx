@@ -43,7 +43,7 @@ export function ParentHome() {
         {children.map((c) => (
           <article key={c.id} className="sticker flex flex-col gap-2 p-4">
             <div className="flex items-center gap-3">
-              <span aria-hidden className="text-3xl">{ageBandInfo[c.ageBand].emoji}</span>
+              <span aria-hidden className="text-3xl">{c.avatar ?? ageBandInfo[c.ageBand].emoji}</span>
               <div className="flex-1">
                 <h3 className="t-title">{c.name}</h3>
                 <p className="t-caption text-ink-soft">Ages {ageBandInfo[c.ageBand].label}</p>

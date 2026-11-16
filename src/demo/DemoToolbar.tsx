@@ -21,14 +21,14 @@ export function DemoToolbar() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="fixed right-3 top-3 z-50 min-h-11 rounded-full bg-ink px-4 text-sm font-bold text-paper shadow-lg lg:hidden"
+        className="fixed right-3 top-1.5 z-50 min-h-11 rounded-full bg-ink px-4 text-sm font-bold text-paper shadow-lg lg:hidden"
       >
         Demo {open ? '×' : '⚙'}
       </button>
 
       <aside
         aria-label="Demo toolbar"
-        className={`${open ? 'block' : 'hidden'} fixed inset-x-3 top-16 z-40 max-h-[80dvh] overflow-y-auto rounded-2xl bg-ink p-4 text-sm text-paper shadow-2xl lg:static lg:mr-0 lg:block lg:max-h-[min(844px,calc(100dvh-32px))] lg:w-72 lg:shrink-0`}
+        className={`${open ? 'block' : 'hidden'} fixed inset-x-3 top-14 z-40 max-h-[80dvh] overflow-y-auto rounded-2xl bg-ink p-4 text-sm text-paper shadow-2xl lg:static lg:mr-0 lg:block lg:max-h-[min(844px,calc(100dvh-32px))] lg:w-72 lg:shrink-0`}
       >
         <h2 className="text-base font-bold">Demo controls</h2>
         <p className="mt-1 text-paper/70">Route: <code>{pathname}</code></p>

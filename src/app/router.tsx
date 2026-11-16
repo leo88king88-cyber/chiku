@@ -1,5 +1,5 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
-import { personas } from '../demo/personas'
+import { createBrowserRouter } from 'react-router-dom'
+import { Join } from '../features/onboarding/Join'
 import { AddChild } from '../features/onboarding/AddChild'
 import { CanAndCant } from '../features/onboarding/CanAndCant'
 import { Controls } from '../features/onboarding/Controls'
@@ -9,19 +9,15 @@ import { Success } from '../features/onboarding/Success'
 import { Welcome } from '../features/onboarding/Welcome'
 import { ParentHome } from '../features/parent/ParentHome'
 import { Placeholder } from '../features/shell/Placeholder'
-import { useStore } from '../store'
 import { AppShell } from './AppShell'
-
-function RootRedirect() {
-  const id = useStore((s) => s.activePersona)
-  return <Navigate to={personas[id].home} replace />
-}
+import { RootRedirect } from './RootRedirect'
 
 export const router = createBrowserRouter([
   {
     element: <AppShell />,
     children: [
       { path: '/', element: <RootRedirect /> },
+      { path: '/join/:code', element: <Join /> },
       { path: '/p/welcome', element: <Welcome /> },
       { path: '/p/can-and-cant', element: <CanAndCant /> },
       { path: '/p/add-child', element: <AddChild /> },

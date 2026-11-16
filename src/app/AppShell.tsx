@@ -4,7 +4,7 @@ import { PhoneFrame } from './PhoneFrame'
 
 export function AppShell() {
   return (
-    <div className="flex min-h-dvh items-center justify-center gap-6 sm:p-4">
+    <div className="flex min-h-dvh items-center justify-center gap-6 pt-14 sm:p-4">
       <PhoneFrame>
         <Outlet />
       </PhoneFrame>
