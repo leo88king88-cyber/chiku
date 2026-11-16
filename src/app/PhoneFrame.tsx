@@ -1,4 +1,6 @@
+import { MotionConfig } from 'framer-motion'
 import type { ReactNode } from 'react'
+import { CelebrationLayer } from '../features/goals/CelebrationLayer'
 import { Toast } from '../components/ui/Toast'
 import { useActivePersona } from '../store'
 
@@ -14,7 +16,10 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
       data-band={band}
       className="relative flex h-[calc(100dvh-56px)] w-full flex-col overflow-hidden bg-paper transform-gpu sm:h-[min(844px,calc(100dvh-32px))] sm:w-[390px] sm:rounded-[44px] sm:border-[10px] sm:border-ink sm:shadow-2xl"
     >
-      <div className="flex-1 overflow-y-auto overscroll-contain">{children}</div>
+      <MotionConfig reducedMotion="user">
+        <div className="flex-1 overflow-y-auto overscroll-contain">{children}</div>
+        <CelebrationLayer />
+      </MotionConfig>
       <Toast />
     </div>
   )

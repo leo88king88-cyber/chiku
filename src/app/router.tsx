@@ -1,4 +1,12 @@
 import { createBrowserRouter } from 'react-router-dom'
+import { ChildGate } from '../features/goals/ChildGate'
+import { ChildHome } from '../features/goals/ChildHome'
+import { GoalDetail } from '../features/goals/GoalDetail'
+import { GoalDone } from '../features/goals/GoalDone'
+import { Insights } from '../features/goals/Insights'
+import { NewGoal } from '../features/goals/NewGoal'
+import { RequestMoney } from '../features/goals/RequestMoney'
+import { Approvals } from '../features/parent/Approvals'
 import { Join } from '../features/onboarding/Join'
 import { AddChild } from '../features/onboarding/AddChild'
 import { CanAndCant } from '../features/onboarding/CanAndCant'
@@ -26,6 +34,19 @@ export const router = createBrowserRouter([
       { path: '/p/pocket-money', element: <PocketMoney /> },
       { path: '/p/success', element: <Success /> },
       { path: '/p/home', element: <ParentHome /> },
+      { path: '/p/approvals', element: <Approvals /> },
+      {
+        element: <ChildGate />,
+        children: [
+          { path: '/c/home', element: <ChildHome /> },
+          { path: '/c/goal/new', element: <NewGoal /> },
+          { path: '/c/next-goal', element: <NewGoal next /> },
+          { path: '/c/goal/:id', element: <GoalDetail /> },
+          { path: '/c/goal/:id/done', element: <GoalDone /> },
+          { path: '/c/request-money', element: <RequestMoney /> },
+          { path: '/c/insights', element: <Insights /> },
+        ],
+      },
       // Flows 2 and 3 land here in later milestones.
       { path: '*', element: <Placeholder /> },
     ],

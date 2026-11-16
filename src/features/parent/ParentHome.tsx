@@ -8,13 +8,23 @@ import { ageBandInfo } from '../../store/presets'
 
 export function ParentHome() {
   const navigate = useNavigate()
-  const { children, guardian, kycStatus } = useStore()
+  const { children, guardian, kycStatus, requests, pocketMoneyLate } = useStore()
+  const receive = useStore((s) => s.receivePocketMoney)
+  const pending = requests.filter((r) => r.status === 'pending').length
   const toast = useToast((s) => s.show)
   if (children.length === 0) return <Navigate to="/p/welcome" replace />
 
   const attention: { text: string; action?: string; onAction?: () => void }[] = []
   if (kycStatus !== 'verified')
     attention.push({ text: kycStatus === 'pending' ? 'KYC under review. Real investing is locked until it clears.' : "KYC couldn't be verified. Real investing is locked.", action: 'Fix', onAction: () => navigate('/p/kyc') })
+  if (pending > 0)
+    attention.push({ text: `${pending} ${pending === 1 ? 'request is' : 'requests are'} waiting for you.`, action: 'Review', onAction: () => navigate('/p/approvals') })
+  if (pocketMoneyLate)
+    attention.push({
+      text: "This month's pocket money didn't go through. Your UPI AutoPay needs a retry.",
+      action: 'Retry now',
+      onAction: () => children.filter((c) => c.pocketMoney?.mandate === 'active').forEach((c) => receive(c.id)),
+    })
   children.forEach((c) => {
     if (c.controls.isDefault) attention.push({ text: `${c.name} is on safe defaults. Review controls.`, action: 'Review', onAction: () => { useStore.setState({ draftChildId: c.id }); navigate('/p/controls') } })
     if (!c.pocketMoney) attention.push({ text: `${c.name} has no pocket money set up.`, action: 'Set up', onAction: () => { useStore.setState({ draftChildId: c.id }); navigate('/p/pocket-money') } })

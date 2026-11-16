@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { useStore, type KycStatus } from '../store'
-import { flowStarts, personaList, type PersonaId } from './personas'
+import { flowStarts, personaList, personas, type PersonaId } from './personas'
 
 export function DemoToolbar() {
   const [open, setOpen] = useState(false)
@@ -78,6 +78,35 @@ export function DemoToolbar() {
             <span>Demo day +{s.demoDayOffset}</span>
             <Button variant="secondary" onClick={s.advanceDay} className="!min-h-11 !px-3 !text-sm">Next day</Button>
           </div>
+        </Section>
+
+        <Section title="Money">
+          <Button
+            variant="secondary"
+            className="w-full !text-sm"
+            onClick={() => {
+              const st = useStore.getState()
+              const persona = personas[st.activePersona]
+              const targets = st.children.filter((c) => persona.view === 'parent' || c.name.toLowerCase() === persona.name.toLowerCase())
+              ;(targets.length ? targets : st.children.slice(0, 1)).forEach((c) => st.receivePocketMoney(c.id))
+              setOpen(false)
+            }}
+          >
+            Drop pocket money now
+          </Button>
+          <Button
+            variant="secondary"
+            className="mt-2 w-full !text-sm"
+            onClick={() => {
+              const st = useStore.getState()
+              const persona = personas[st.activePersona]
+              const c = st.children.find((x) => x.name.toLowerCase() === persona.name.toLowerCase()) ?? st.children[0]
+              if (c) st.addBonusToSave(c.id, 500)
+              setOpen(false)
+            }}
+          >
+            Birthday money +₹500 to Save
+          </Button>
         </Section>
 
         <Section title="Data">
