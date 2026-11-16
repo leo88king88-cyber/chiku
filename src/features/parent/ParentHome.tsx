@@ -1,0 +1,70 @@
+import { Navigate, useNavigate } from 'react-router-dom'
+import { Button } from '../../components/ui/Button'
+import { formatINR } from '../../lib/money'
+import { nextOccurrence, ordinal } from '../../lib/dates'
+import { useStore } from '../../store'
+import { useToast } from '../../store/toast'
+import { ageBandInfo } from '../../store/presets'
+
+export function ParentHome() {
+  const navigate = useNavigate()
+  const { children, guardian, kycStatus } = useStore()
+  const toast = useToast((s) => s.show)
+  if (children.length === 0) return <Navigate to="/p/welcome" replace />
+
+  const attention: { text: string; action?: string; onAction?: () => void }[] = []
+  if (kycStatus !== 'verified')
+    attention.push({ text: kycStatus === 'pending' ? 'KYC under review. Real investing is locked until it clears.' : "KYC couldn't be verified. Real investing is locked.", action: 'Fix', onAction: () => navigate('/p/kyc') })
+  children.forEach((c) => {
+    if (c.controls.isDefault) attention.push({ text: `${c.name} is on safe defaults. Review controls.`, action: 'Review', onAction: () => { useStore.setState({ draftChildId: c.id }); navigate('/p/controls') } })
+    if (!c.pocketMoney) attention.push({ text: `${c.name} has no pocket money set up.`, action: 'Set up', onAction: () => { useStore.setState({ draftChildId: c.id }); navigate('/p/pocket-money') } })
+  })
+
+  return (
+    <main className="flex flex-col gap-[var(--gap)] p-5">
+      <header>
+        <p className="t-caption text-ink-soft">Namaste 🙏</p>
+        <h1 className="t-display">{guardian.name.split(' ')[0]}'s family</h1>
+      </header>
+
+      {attention.length > 0 && (
+        <section aria-label="Needs your attention" className="flex flex-col gap-2">
+          <h2 className="t-title">Needs your attention</h2>
+          {attention.map((a) => (
+            <div key={a.text} className="sticker flex items-center gap-3 !bg-saffron/20 p-3">
+              <p className="t-body flex-1">{a.text}</p>
+              {a.action && <Button variant="secondary" onClick={a.onAction} className="!px-3">{a.action}</Button>}
+            </div>
+          ))}
+        </section>
+      )}
+
+      <section aria-label="Children" className="flex flex-col gap-3">
+        {children.map((c) => (
+          <article key={c.id} className="sticker flex flex-col gap-2 p-4">
+            <div className="flex items-center gap-3">
+              <span aria-hidden className="text-3xl">{ageBandInfo[c.ageBand].emoji}</span>
+              <div className="flex-1">
+                <h3 className="t-title">{c.name}</h3>
+                <p className="t-caption text-ink-soft">Ages {ageBandInfo[c.ageBand].label}</p>
+              </div>
+              <span className={`t-caption rounded-full px-3 py-1 font-bold ${c.inviteStatus === 'accepted' ? 'bg-leaf/20 text-leaf' : 'bg-saffron/30'}`}>
+                {c.inviteStatus === 'accepted' ? 'Joined' : 'Invite sent'}
+              </span>
+            </div>
+            <p className="t-body">
+              {c.pocketMoney
+                ? `${formatINR(c.pocketMoney.amount)} on the ${ordinal(c.pocketMoney.dayOfMonth)} · next ${nextOccurrence(c.pocketMoney.dayOfMonth)}`
+                : 'No pocket money yet'}
+            </p>
+            {c.inviteStatus === 'sent' && (
+              <Button variant="secondary" onClick={() => toast(`Reminder sent to ${c.name}`)}>Resend invite</Button>
+            )}
+          </article>
+        ))}
+      </section>
+
+      <Button onClick={() => navigate('/p/add-child?second=1')} variant="secondary" className="w-full">+ Add another child</Button>
+    </main>
+  )
+}

@@ -80,6 +80,12 @@ export function DemoToolbar() {
           </div>
         </Section>
 
+        <Section title="Data">
+          <Button variant="secondary" className="w-full !text-sm" onClick={() => { s.loadDemoFamily(); navigate('/p/home'); setOpen(false) }}>
+            Load demo family (skip onboarding)
+          </Button>
+        </Section>
+
         <Button
           variant="secondary"
           className="mt-4 w-full !text-sm"
