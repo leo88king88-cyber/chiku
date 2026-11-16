@@ -31,7 +31,7 @@ export function InvestCard({ childId }: { childId: string }) {
         </span>
         <span className="text-right">
           <b className="t-money">{formatINR(Math.round(stats.value))}</b>
-          {sim.trades.length > 0 && <span className={`t-caption block ${stats.gain >= 0 ? 'text-leaf' : 'text-tomato'}`}>{signedINR(stats.gain)} ({signed(stats.returnPct)})</span>}
+          {sim.trades.length > 0 && <span className={`t-caption block ${stats.gain >= 0 ? 'text-leaf-ink' : 'text-tomato-ink'}`}>{signedINR(stats.gain)} ({signed(stats.returnPct)})</span>}
         </span>
       </Link>
       {status && (

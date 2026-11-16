@@ -36,7 +36,7 @@ function Body({ childId }: { childId: string }) {
   const d = req.decision
   const waitLeft = d?.reasons.includes('wait') ? Math.max(0, d.decidedDay + WAIT_DAYS - day) : 0
   const demoLink = (
-    <Button variant="ghost" onClick={() => { setPersona('priya'); navigate('/p/approvals') }} className="!text-sm">
+    <Button variant="ghost" onClick={() => { setPersona('priya'); setTimeout(() => navigate('/p/approvals'), 80) }} className="!text-sm">
       Demo shortcut: switch to {parent}'s view
     </Button>
   )

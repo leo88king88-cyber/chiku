@@ -9,6 +9,9 @@
   --color-tomato: #f2572b;
   --color-leaf: #2fa36b;
   --color-sky: #4c8dff;
+  /* Darker text-safe variants (>= 4.5:1 on white and paper). */
+  --color-leaf-ink: #1b7548;
+  --color-tomato-ink: #c2370f;
   --color-plum: #7b4fd6;
   --font-display: 'Baloo 2', 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;

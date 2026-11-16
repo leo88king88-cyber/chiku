@@ -41,7 +41,7 @@ function Detail({ childId, fundId }: { childId: string; fundId: string }) {
         <p className="t-body">{fund.blurb}</p>
         <section className="sticker p-4">
           <p className="t-caption text-ink-soft">Last {sim.week} weeks (mock data, starts at 100)</p>
-          <p className={`t-title ${change >= 0 ? 'text-leaf' : 'text-tomato'}`}>{signed(change)}</p>
+          <p className={`t-title ${change >= 0 ? 'text-leaf-ink' : 'text-tomato-ink'}`}>{signed(change)}</p>
           <LineChart label={`${fund.name} price`} series={series} />
           <ChartLegend series={series} />
         </section>

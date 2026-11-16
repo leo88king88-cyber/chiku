@@ -1,36 +1,45 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { lazy } from 'react'
+import { createBrowserRouter, type RouteObject } from 'react-router-dom'
 import { ChildGate } from '../features/goals/ChildGate'
-import { ChildHome } from '../features/goals/ChildHome'
-import { GoalDetail } from '../features/goals/GoalDetail'
-import { GoalDone } from '../features/goals/GoalDone'
-import { Insights } from '../features/goals/Insights'
-import { NewGoal } from '../features/goals/NewGoal'
-import { RequestMoney } from '../features/goals/RequestMoney'
-import { Approvals } from '../features/parent/Approvals'
-import { Compare } from '../features/invest/Compare'
-import { FundDetail } from '../features/invest/FundDetail'
-import { Graduation } from '../features/invest/Graduation'
-import { Quiz } from '../features/invest/Quiz'
-import { SimHub } from '../features/invest/SimHub'
-import { SipConfirmed } from '../features/invest/SipConfirmed'
-import { SipRequest } from '../features/invest/SipRequest'
-import { SipStatus } from '../features/invest/SipStatus'
-import { Join } from '../features/onboarding/Join'
-import { AddChild } from '../features/onboarding/AddChild'
-import { CanAndCant } from '../features/onboarding/CanAndCant'
-import { Controls } from '../features/onboarding/Controls'
-import { Kyc } from '../features/onboarding/Kyc'
-import { PocketMoney } from '../features/onboarding/PocketMoney'
-import { Success } from '../features/onboarding/Success'
-import { Welcome } from '../features/onboarding/Welcome'
-import { ParentHome } from '../features/parent/ParentHome'
-import { Placeholder } from '../features/shell/Placeholder'
+import { NotFound } from '../features/shell/NotFound'
 import { AppShell } from './AppShell'
+import { ErrorScreen } from './ErrorScreen'
 import { RootRedirect } from './RootRedirect'
 
-export const router = createBrowserRouter([
+/** Code-split every screen; AppShell shows a skeleton while a chunk loads. */
+const screen = <T extends Record<string, React.ComponentType<never>>>(load: () => Promise<T>, name: keyof T) =>
+  lazy(() => load().then((m) => ({ default: m[name] as React.ComponentType })))
+
+const Welcome = screen(() => import('../features/onboarding/Welcome'), 'Welcome')
+const CanAndCant = screen(() => import('../features/onboarding/CanAndCant'), 'CanAndCant')
+const AddChild = screen(() => import('../features/onboarding/AddChild'), 'AddChild')
+const Kyc = screen(() => import('../features/onboarding/Kyc'), 'Kyc')
+const Controls = screen(() => import('../features/onboarding/Controls'), 'Controls')
+const PocketMoney = screen(() => import('../features/onboarding/PocketMoney'), 'PocketMoney')
+const Success = screen(() => import('../features/onboarding/Success'), 'Success')
+const Join = screen(() => import('../features/onboarding/Join'), 'Join')
+const ParentHome = screen(() => import('../features/parent/ParentHome'), 'ParentHome')
+const Approvals = screen(() => import('../features/parent/Approvals'), 'Approvals')
+const ChildHome = screen(() => import('../features/goals/ChildHome'), 'ChildHome')
+const NewGoal = screen(() => import('../features/goals/NewGoal'), 'NewGoal')
+const NextGoal = screen(() => import('../features/goals/NewGoal'), 'NextGoal')
+const GoalDetail = screen(() => import('../features/goals/GoalDetail'), 'GoalDetail')
+const GoalDone = screen(() => import('../features/goals/GoalDone'), 'GoalDone')
+const RequestMoney = screen(() => import('../features/goals/RequestMoney'), 'RequestMoney')
+const Insights = screen(() => import('../features/goals/Insights'), 'Insights')
+const SimHub = screen(() => import('../features/invest/SimHub'), 'SimHub')
+const FundDetail = screen(() => import('../features/invest/FundDetail'), 'FundDetail')
+const Compare = screen(() => import('../features/invest/Compare'), 'Compare')
+const Quiz = screen(() => import('../features/invest/Quiz'), 'Quiz')
+const SipRequest = screen(() => import('../features/invest/SipRequest'), 'SipRequest')
+const SipStatus = screen(() => import('../features/invest/SipStatus'), 'SipStatus')
+const SipConfirmed = screen(() => import('../features/invest/SipConfirmed'), 'SipConfirmed')
+const Graduation = screen(() => import('../features/invest/Graduation'), 'Graduation')
+
+const routes: RouteObject[] = [
   {
     element: <AppShell />,
+    errorElement: <ErrorScreen />,
     children: [
       { path: '/', element: <RootRedirect /> },
       { path: '/join/:code', element: <Join /> },
@@ -48,7 +57,7 @@ export const router = createBrowserRouter([
         children: [
           { path: '/c/home', element: <ChildHome /> },
           { path: '/c/goal/new', element: <NewGoal /> },
-          { path: '/c/next-goal', element: <NewGoal next /> },
+          { path: '/c/next-goal', element: <NextGoal /> },
           { path: '/c/goal/:id', element: <GoalDetail /> },
           { path: '/c/goal/:id/done', element: <GoalDone /> },
           { path: '/c/request-money', element: <RequestMoney /> },
@@ -63,8 +72,9 @@ export const router = createBrowserRouter([
           { path: '/c/invest/graduation', element: <Graduation /> },
         ],
       },
-      // Flows 2 and 3 land here in later milestones.
-      { path: '*', element: <Placeholder /> },
+      { path: '*', element: <NotFound /> },
     ],
   },
-])
+]
+
+export const router = createBrowserRouter(routes)

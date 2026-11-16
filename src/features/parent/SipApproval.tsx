@@ -58,7 +58,7 @@ export function SipApproval({ req }: { req: Sip & SipRequestBody }) {
 
       <p className="t-body">
         Risk check: <b>{profileInfo[req.profile].label}</b> {profileInfo[req.profile].emoji}
-        {fund.riskLevel > profileInfo[req.profile].maxRisk && <span className="block text-tomato">This fund is riskier than their answers suggest.</span>}
+        {fund.riskLevel > profileInfo[req.profile].maxRisk && <span className="block text-tomato-ink">This fund is riskier than their answers suggest.</span>}
         {req.reasonChip && <span className="block text-ink-soft">Why: {req.reasonChip}</span>}
       </p>
       <DisclosureBanner invest />

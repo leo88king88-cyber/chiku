@@ -97,7 +97,7 @@ export function Kyc() {
       }
     >
       <div className="flex items-center gap-3">
-        <span aria-hidden className={`grid size-12 place-items-center rounded-full text-2xl text-white ${isPending ? 'bg-saffron' : 'bg-tomato'}`}>{isPending ? '⏳' : '!'}</span>
+        <span aria-hidden className={`grid size-12 place-items-center rounded-full text-2xl ${isPending ? 'bg-saffron text-ink' : 'bg-tomato-ink text-white'}`}>{isPending ? '⏳' : '!'}</span>
         <h1 className="t-display">{isPending ? 'KYC is under review' : "We couldn't verify your KYC"}</h1>
       </div>
       <p className="t-body">

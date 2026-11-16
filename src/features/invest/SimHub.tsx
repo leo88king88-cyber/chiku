@@ -34,7 +34,7 @@ function Hub({ childId, childName }: { childId: string; childName: string }) {
           <p className="t-caption text-ink-soft">{childName}'s practice portfolio · week {sim.week}</p>
           <p className="t-display"><AnimatedNumber value={Math.round(stats.value)} /></p>
           {hasInvested ? (
-            <p className={`t-body font-bold ${up ? 'text-leaf' : 'text-tomato'}`}>
+            <p className={`t-body font-bold ${up ? 'text-leaf-ink' : 'text-tomato-ink'}`}>
               {signedINR(stats.gain)} ({signed(stats.returnPct)}) on {formatINR(stats.invested)} invested
             </p>
           ) : (
@@ -62,7 +62,7 @@ function Hub({ childId, childName }: { childId: string; childName: string }) {
           <motion.section key={recap.week} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} aria-label="Weekly recap" className="sticker p-4">
             <h2 className="t-title">Week {recap.week} recap</h2>
             <p className="t-body mt-1">
-              Your picks <b className={recap.portfolioPct >= 0 ? 'text-leaf' : 'text-tomato'}>{signed(recap.portfolioPct, 2)}</b>, index fund <b>{signed(recap.indexPct, 2)}</b>.
+              Your picks <b className={recap.portfolioPct >= 0 ? 'text-leaf-ink' : 'text-tomato-ink'}>{signed(recap.portfolioPct, 2)}</b>, index fund <b>{signed(recap.indexPct, 2)}</b>.
             </p>
             {recap.best && (
               <p className="t-caption mt-1 text-ink-soft">
@@ -82,7 +82,7 @@ function Hub({ childId, childName }: { childId: string; childName: string }) {
                 <li key={h.fund.id}>
                   <Link to={`/c/invest/fund/${h.fund.id}`} className="flex min-h-14 items-center justify-between gap-3 py-2 no-underline">
                     <span><b>{h.fund.name}</b><span className="t-caption block text-ink-soft">{formatINR(h.invested)} invested</span></span>
-                    <span className="text-right"><b className="t-money">{formatINR(h.value)}</b><span className={`t-caption block ${h.gainPct >= 0 ? 'text-leaf' : 'text-tomato'}`}>{signed(h.gainPct)}</span></span>
+                    <span className="text-right"><b className="t-money">{formatINR(h.value)}</b><span className={`t-caption block ${h.gainPct >= 0 ? 'text-leaf-ink' : 'text-tomato-ink'}`}>{signed(h.gainPct)}</span></span>
                   </Link>
                 </li>
               ))}

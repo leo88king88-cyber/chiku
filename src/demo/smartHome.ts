@@ -11,5 +11,11 @@ export function smartHome(id: PersonaId): string {
     const sip = s.requests.filter((r) => r.kind === 'sip' && r.childId === child?.id).at(-1)
     if (sip && (sip.status !== 'approved' || (sip.kind === 'sip' && !sip.seen))) return '/c/invest/status'
   }
-  return personas[id].home
+  const p = personas[id]
+  if (p.view === 'child') {
+    const child = s.children.find((c) => c.name.toLowerCase() === p.name.toLowerCase())
+    const goal = s.goals.find((g) => g.childId === child?.id && (g.status === 'complete' || g.status === 'awaitingApproval' || (g.status === 'purchased' && !g.seen)))
+    if (goal) return `/c/goal/${goal.id}/done`
+  }
+  return p.home
 }

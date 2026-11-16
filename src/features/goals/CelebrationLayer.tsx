@@ -61,7 +61,7 @@ export function CelebrationLayer() {
                 ))}
               </div>
               <h2 className="t-display">{ev.label} is here!</h2>
-              <p className="t-title t-money text-leaf">
+              <p className="t-title t-money text-leaf-ink">
                 +{formatINR(ev.parts.spend + ev.parts.save + ev.parts.share)}
               </p>
               <div className="flex w-full justify-center gap-2">

@@ -1,5 +1,6 @@
 import { MotionConfig } from 'framer-motion'
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
+import { useLocation } from 'react-router-dom'
 import { CelebrationLayer } from '../features/goals/CelebrationLayer'
 import { Toast } from '../components/ui/Toast'
 import { useActivePersona } from '../store'
@@ -11,13 +12,19 @@ import { useActivePersona } from '../store'
  */
 export function PhoneFrame({ children }: { children: ReactNode }) {
   const { band } = useActivePersona()
+  const scroller = useRef<HTMLDivElement>(null)
+  const { pathname } = useLocation()
+  // The scroll container outlives routes, so reset it or a new screen opens part-way down.
+  useEffect(() => {
+    scroller.current?.scrollTo({ top: 0 })
+  }, [pathname])
   return (
     <div
       data-band={band}
       className="relative flex h-[calc(100dvh-56px)] w-full flex-col overflow-hidden bg-paper transform-gpu sm:h-[min(844px,calc(100dvh-32px))] sm:w-[390px] sm:rounded-[44px] sm:border-[10px] sm:border-ink sm:shadow-2xl"
     >
       <MotionConfig reducedMotion="user">
-        <div className="flex-1 overflow-y-auto overscroll-contain">{children}</div>
+        <div ref={scroller} className="flex-1 overflow-y-auto overscroll-contain">{children}</div>
         <CelebrationLayer />
       </MotionConfig>
       <Toast />

@@ -39,12 +39,12 @@ function Body({ childId }: { childId: string }) {
         <div className="grid grid-cols-2 gap-3">
           <div className="sticker p-3">
             <p className="t-caption text-ink-soft">Your picks</p>
-            <p className={`t-title ${stats.gain >= 0 ? 'text-leaf' : 'text-tomato'}`}>{signed(stats.returnPct)}</p>
+            <p className={`t-title ${stats.gain >= 0 ? 'text-leaf-ink' : 'text-tomato-ink'}`}>{signed(stats.returnPct)}</p>
             <p className="t-caption t-money">{signedINR(stats.gain)}</p>
           </div>
           <div className="sticker p-3">
             <p className="t-caption text-ink-soft">Index fund</p>
-            <p className={`t-title ${stats.indexGain >= 0 ? 'text-leaf' : 'text-tomato'}`}>{signed(stats.indexReturnPct)}</p>
+            <p className={`t-title ${stats.indexGain >= 0 ? 'text-leaf-ink' : 'text-tomato-ink'}`}>{signed(stats.indexReturnPct)}</p>
             <p className="t-caption t-money">{signedINR(stats.indexGain)}</p>
           </div>
         </div>

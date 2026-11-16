@@ -59,7 +59,7 @@ export function ParentHome() {
                 <h3 className="t-title">{c.name}</h3>
                 <p className="t-caption text-ink-soft">Ages {ageBandInfo[c.ageBand].label}</p>
               </div>
-              <span className={`t-caption rounded-full px-3 py-1 font-bold ${c.inviteStatus === 'accepted' ? 'bg-leaf/20 text-leaf' : 'bg-saffron/30'}`}>
+              <span className={`t-caption rounded-full px-3 py-1 font-bold ${c.inviteStatus === 'accepted' ? 'bg-leaf/20 text-leaf-ink' : 'bg-saffron/30'}`}>
                 {c.inviteStatus === 'accepted' ? 'Joined' : 'Invite sent'}
               </span>
             </div>

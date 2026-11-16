@@ -12,8 +12,10 @@ export function DemoToolbar() {
   const s = useStore()
 
   const go = (persona: PersonaId, path: string) => {
+    // Persona first, so every screen settles; then route. Screens we are leaving may redirect
+    // when the persona changes (e.g. "no child for this persona"), and the toolbar must win.
     s.setPersona(persona)
-    navigate(path)
+    setTimeout(() => navigate(path), 80)
     setOpen(false)
   }
 

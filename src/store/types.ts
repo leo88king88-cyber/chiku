@@ -56,6 +56,8 @@ export interface Goal {
   /** Milestone percentages already reached or celebrated. */
   milestonesHit: number[]
   createdDay: number
+  /** Child has seen the "approved" celebration. */
+  seen?: boolean
 }
 
 export interface Txn {

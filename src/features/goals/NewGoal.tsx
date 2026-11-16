@@ -109,3 +109,8 @@ export function NewGoal({ next = false }: { next?: boolean }) {
     </div>
   )
 }
+
+/** Route wrapper for the post-purchase "pick your next goal" screen. */
+export function NextGoal() {
+  return <NewGoal next />
+}

@@ -51,6 +51,7 @@ interface DemoActions {
   submitSip: (childId: string, p: { fundId: string; amount: number; profile: RiskProfile; snapshot: SimSnapshot; reasonChip?: string; resubmissionOf?: string }) => string
   decideSip: (id: string, d: { approve: true } | { approve: false; reasons: DeclineReason[]; note?: string; suggestedAmount?: number }) => void
   markSipSeen: (id: string) => void
+  markGoalSeen: (id: string) => void
 }
 
 const guardian: Guardian = {
@@ -388,6 +389,7 @@ export const useStore = create<DemoState & DemoActions>()(
           })
         }
       },
+      markGoalSeen: (id) => set((s) => ({ goals: s.goals.map((g) => (g.id === id ? { ...g, seen: true } : g)) })),
       markSipSeen: (id) =>
         set((s) => ({ requests: s.requests.map((r) => (r.id === id && r.kind === 'sip' ? { ...r, seen: true } : r)) })),
 
@@ -403,6 +405,21 @@ export const useStore = create<DemoState & DemoActions>()(
     {
       name: STORAGE_KEY,
       version: 4,
+      // Never let a corrupted or hand-edited saved state crash the app: fall back per field.
+      merge: (persisted, current) => {
+        const p = (persisted && typeof persisted === 'object' ? persisted : {}) as Partial<DemoState>
+        const arr = <T,>(v: unknown, d: T[]) => (Array.isArray(v) ? (v as T[]) : d)
+        return {
+          ...current,
+          ...p,
+          children: arr(p.children, current.children),
+          goals: arr(p.goals, current.goals),
+          requests: arr(p.requests, current.requests),
+          transactions: arr(p.transactions, current.transactions),
+          sips: arr(p.sips, current.sips),
+          sims: p.sims && typeof p.sims === 'object' ? p.sims : current.sims,
+        }
+      },
       migrate: (persisted) => {
         const p = { ...initial, ...(persisted as object) } as DemoState
         p.sims = p.sims ?? {}

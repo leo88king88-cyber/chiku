@@ -4,10 +4,10 @@ export function Keypad({ onDigit, onBackspace }: { onDigit: (d: string) => void;
     <div className="grid grid-cols-3 gap-2">
       {keys.map((k, i) =>
         k === '' ? (
-          <span key={i} />
+          <span key={`gap${i}`} />
         ) : (
           <button
-            key={k}
+            key={`key${k}`}
             aria-label={k === '⌫' ? 'Delete' : k}
             onClick={() => (k === '⌫' ? onBackspace() : onDigit(k))}
             className="h-14 rounded-xl bg-paper text-2xl font-bold active:bg-paper-deep"
