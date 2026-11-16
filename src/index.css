@@ -1,0 +1,109 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-paper: #fff6e5;
+  --color-paper-deep: #f7e8c8;
+  --color-ink: #1f1b3a;
+  --color-ink-soft: #4a4568;
+  --color-saffron: #ffb020;
+  --color-tomato: #f2572b;
+  --color-leaf: #2fa36b;
+  --color-sky: #4c8dff;
+  --color-plum: #7b4fd6;
+  --font-display: 'Baloo 2', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* Age-adaptive tokens. data-band is set on the phone frame root. */
+:root,
+[data-band='pro'] {
+  --radius-card: 14px;
+  --radius-btn: 12px;
+  --bw: 1px;
+  --border-color: rgb(31 27 58 / 0.18);
+  --sticker-offset: 0px;
+  --font-heading: var(--font-sans);
+  --fs-display: 28px;
+  --fs-title: 20px;
+  --fs-body: 16px;
+  --gap: 16px;
+}
+[data-band='teen'] {
+  --radius-card: 20px;
+  --radius-btn: 16px;
+  --bw: 2px;
+  --border-color: var(--color-ink);
+  --sticker-offset: 2px;
+  --font-heading: var(--font-sans);
+  --fs-display: 32px;
+  --fs-title: 22px;
+  --fs-body: 16px;
+  --gap: 16px;
+}
+[data-band='kid'] {
+  --radius-card: 28px;
+  --radius-btn: 22px;
+  --bw: 3px;
+  --border-color: var(--color-ink);
+  --sticker-offset: 5px;
+  --font-heading: var(--font-display);
+  --fs-display: 40px;
+  --fs-title: 26px;
+  --fs-body: 18px;
+  --gap: 20px;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--color-paper-deep);
+    -webkit-tap-highlight-color: transparent;
+  }
+  button,
+  a {
+    min-height: 44px;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-sky);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .sticker {
+    background: #fff;
+    border: var(--bw) solid var(--border-color);
+    border-radius: var(--radius-card);
+    box-shadow: var(--sticker-offset) var(--sticker-offset) 0 var(--color-ink);
+  }
+  .t-display {
+    font-family: var(--font-heading);
+    font-size: var(--fs-display);
+    line-height: 1.1;
+    font-weight: 800;
+  }
+  .t-title {
+    font-family: var(--font-heading);
+    font-size: var(--fs-title);
+    line-height: 1.2;
+    font-weight: 700;
+  }
+  .t-body {
+    font-size: var(--fs-body);
+    line-height: 1.5;
+  }
+  .t-caption {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .t-money {
+    font-variant-numeric: tabular-nums;
+  }
+}
