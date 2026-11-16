@@ -24,6 +24,8 @@ export function UpiSheet({
   amount,
   day,
   childName,
+  payee = 'Chiku Kids · pocket money',
+  note,
 }: {
   open: boolean
   onClose: () => void
@@ -31,6 +33,8 @@ export function UpiSheet({
   amount: number
   day: number
   childName: string
+  payee?: string
+  note?: string
 }) {
   const guardian = useStore((s) => s.guardian)
   const [step, setStep] = useState<Step>('apps')
@@ -76,7 +80,7 @@ export function UpiSheet({
           <h2 className="t-title">Approve AutoPay</h2>
           <dl className="divide-y divide-ink/10 rounded-xl bg-paper px-4">
             {[
-              ['To', 'Chiku Kids · pocket money'],
+              ['To', payee],
               ['Amount', `${formatINR(amount)} every month`],
               ['Debits on', `${ordinal(day)} of each month`],
               ['From', `${guardian.bankMasked} · ${guardian.upiId}`],
@@ -88,7 +92,7 @@ export function UpiSheet({
               </div>
             ))}
           </dl>
-          <p className="t-caption text-ink-soft">The money goes to {childName}'s jars on the day. Pause or cancel anytime in {app.name}.</p>
+          <p className="t-caption text-ink-soft">{note ?? `The money goes to ${childName}'s jars on the day.`} Pause or cancel anytime in {app.name}.</p>
           <Button onClick={() => setStep('pin')} className="w-full">Approve</Button>
           <Button variant="ghost" onClick={() => setStep('apps')}>Back</Button>
         </div>

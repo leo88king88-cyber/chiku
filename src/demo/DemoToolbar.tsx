@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { useStore, type KycStatus } from '../store'
+import { smartHome } from './smartHome'
 import { flowStarts, personaList, personas, type PersonaId } from './personas'
 
 export function DemoToolbar() {
@@ -38,7 +39,7 @@ export function DemoToolbar() {
             {personaList.map((p) => (
               <button
                 key={p.id}
-                onClick={() => go(p.id, p.home)}
+                onClick={() => go(p.id, smartHome(p.id))}
                 aria-pressed={s.activePersona === p.id}
                 className={`min-h-11 rounded-xl px-2 text-left font-bold ${s.activePersona === p.id ? 'bg-saffron text-ink' : 'bg-white/10'}`}
               >
@@ -73,11 +74,12 @@ export function DemoToolbar() {
             </select>
           </label>
           <Toggle label="Pocket money late" checked={s.pocketMoneyLate} onChange={(v) => s.setScenario({ pocketMoneyLate: v })} />
-          <Toggle label="Parent declines next SIP" checked={s.declineNextSip} onChange={(v) => s.setScenario({ declineNextSip: v })} />
+          <Toggle label="Auto-decline next SIP" checked={s.declineNextSip} onChange={(v) => s.setScenario({ declineNextSip: v })} />
           <div className="flex min-h-11 items-center justify-between gap-2">
             <span>Demo day +{s.demoDayOffset}</span>
-            <Button variant="secondary" onClick={s.advanceDay} className="!min-h-11 !px-3 !text-sm">Next day</Button>
+            <Button variant="secondary" onClick={() => s.advanceDay(1)} className="!min-h-11 !px-3 !text-sm">Next day</Button>
           </div>
+          <Button variant="secondary" onClick={() => s.advanceDay(7)} className="w-full !text-sm">Skip a week</Button>
         </Section>
 
         <Section title="Money">

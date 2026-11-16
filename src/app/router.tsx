@@ -7,6 +7,14 @@ import { Insights } from '../features/goals/Insights'
 import { NewGoal } from '../features/goals/NewGoal'
 import { RequestMoney } from '../features/goals/RequestMoney'
 import { Approvals } from '../features/parent/Approvals'
+import { Compare } from '../features/invest/Compare'
+import { FundDetail } from '../features/invest/FundDetail'
+import { Graduation } from '../features/invest/Graduation'
+import { Quiz } from '../features/invest/Quiz'
+import { SimHub } from '../features/invest/SimHub'
+import { SipConfirmed } from '../features/invest/SipConfirmed'
+import { SipRequest } from '../features/invest/SipRequest'
+import { SipStatus } from '../features/invest/SipStatus'
 import { Join } from '../features/onboarding/Join'
 import { AddChild } from '../features/onboarding/AddChild'
 import { CanAndCant } from '../features/onboarding/CanAndCant'
@@ -45,6 +53,14 @@ export const router = createBrowserRouter([
           { path: '/c/goal/:id/done', element: <GoalDone /> },
           { path: '/c/request-money', element: <RequestMoney /> },
           { path: '/c/insights', element: <Insights /> },
+          { path: '/c/invest/sim', element: <SimHub /> },
+          { path: '/c/invest/fund/:id', element: <FundDetail /> },
+          { path: '/c/invest/compare', element: <Compare /> },
+          { path: '/c/invest/quiz', element: <Quiz /> },
+          { path: '/c/invest/request', element: <SipRequest /> },
+          { path: '/c/invest/status', element: <SipStatus /> },
+          { path: '/c/invest/sip-confirmed', element: <SipConfirmed /> },
+          { path: '/c/invest/graduation', element: <Graduation /> },
         ],
       },
       // Flows 2 and 3 land here in later milestones.

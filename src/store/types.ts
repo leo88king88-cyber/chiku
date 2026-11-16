@@ -83,7 +83,60 @@ export type Request = {
   | { kind: 'money'; amount: number; reason: string }
   | { kind: 'goalPurchase'; goalId: string; amount: number }
   | { kind: 'goalAmount'; goalId: string }
+  | SipRequestBody
 )
+
+export type RiskProfile = 'conservative' | 'balanced' | 'growth'
+export type DeclineReason = 'tooRisky' | 'wait' | 'smaller'
+
+export interface SimTrade {
+  week: number
+  fundId: string
+  amount: number
+  side: 'buy' | 'sell'
+}
+
+/** Practice portfolio with virtual money. `week` is the simulator's "now" on the mock market. */
+export interface Sim {
+  week: number
+  cash: number
+  trades: SimTrade[]
+  quiz?: { profile: RiskProfile; score: number }
+}
+
+/** Simulator history frozen at the moment the request was sent. */
+export interface SimSnapshot {
+  weeks: number
+  invested: number
+  gain: number
+  returnPct: number
+  indexReturnPct: number
+  portfolio: number[]
+  index: number[]
+}
+
+export interface SipRequestBody {
+  kind: 'sip'
+  fundId: string
+  amount: number
+  dayOfMonth: number
+  profile: RiskProfile
+  snapshot: SimSnapshot
+  reasonChip?: string
+  resubmissionOf?: string
+  decision?: { reasons: DeclineReason[]; note?: string; suggestedAmount?: number; decidedDay: number }
+  /** Child has opened the approval confirmation. */
+  seen?: boolean
+}
+
+export interface Sip {
+  id: string
+  childId: string
+  fundId: string
+  amount: number
+  dayOfMonth: number
+  startedDay: number
+}
 
 export interface Guardian {
   name: string

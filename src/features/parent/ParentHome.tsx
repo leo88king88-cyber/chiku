@@ -2,13 +2,14 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { formatINR } from '../../lib/money'
 import { nextOccurrence, ordinal } from '../../lib/dates'
+import { fundById } from '../invest/funds'
 import { useStore } from '../../store'
 import { useToast } from '../../store/toast'
 import { ageBandInfo } from '../../store/presets'
 
 export function ParentHome() {
   const navigate = useNavigate()
-  const { children, guardian, kycStatus, requests, pocketMoneyLate } = useStore()
+  const { children, guardian, kycStatus, requests, pocketMoneyLate, sips } = useStore()
   const receive = useStore((s) => s.receivePocketMoney)
   const pending = requests.filter((r) => r.status === 'pending').length
   const toast = useToast((s) => s.show)
@@ -67,6 +68,9 @@ export function ParentHome() {
                 ? `${formatINR(c.pocketMoney.amount)} on the ${ordinal(c.pocketMoney.dayOfMonth)} · next ${nextOccurrence(c.pocketMoney.dayOfMonth)}`
                 : 'No pocket money yet'}
             </p>
+            {sips.filter((x) => x.childId === c.id).map((x) => (
+              <p key={x.id} className="t-caption rounded-xl bg-leaf/15 px-3 py-2">SIP: {formatINR(x.amount)}/month in {fundById(x.fundId)?.name}</p>
+            ))}
             {c.inviteStatus === 'sent' && (
               <Button variant="secondary" onClick={() => toast(`Reminder sent to ${c.name}`)}>Resend invite</Button>
             )}

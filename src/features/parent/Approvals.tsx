@@ -7,6 +7,7 @@ import { formatINR } from '../../lib/money'
 import { useStore } from '../../store'
 import { useToast } from '../../store/toast'
 import type { Request } from '../../store/types'
+import { SipApproval } from './SipApproval'
 
 /** Everything waiting on Priya, across children. */
 export function Approvals() {
@@ -37,6 +38,11 @@ export function Approvals() {
 }
 
 function RequestCard({ req }: { req: Request }) {
+  if (req.kind === 'sip') return <SipApproval req={req} />
+  return <SimpleRequestCard req={req} />
+}
+
+function SimpleRequestCard({ req }: { req: Exclude<Request, { kind: 'sip' }> }) {
   const child = useStore((s) => s.children.find((c) => c.id === req.childId))
   const goal = useStore((s) => (req.kind === 'money' ? undefined : s.goals.find((g) => g.id === req.goalId)))
   const resolve = useStore((s) => s.resolveRequest)

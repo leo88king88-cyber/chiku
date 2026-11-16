@@ -9,6 +9,7 @@ import { formatINR } from '../../lib/money'
 import { nextOccurrence } from '../../lib/dates'
 import { currentGoalOf, useStore } from '../../store'
 import type { Child } from '../../store/types'
+import { InvestCard } from '../invest/InvestCard'
 import { GoalCard } from './GoalCard'
 import { LateBanner } from './LateBanner'
 import { RequestStatus } from './RequestStatus'
@@ -81,6 +82,8 @@ export function HomeTeen({ child }: { child: Child }) {
           <Button onClick={() => navigate('/c/goal/new')}>Set a goal</Button>
         </section>
       )}
+
+      {child.ageBand === '15-17' && <InvestCard childId={child.id} />}
 
       <section aria-label="Where did my money go" className="sticker p-4">
         <h2 className="t-title">Where did my money go?</h2>

@@ -4,7 +4,7 @@ import { personas, type PersonaId } from '../demo/personas'
 import type { AgeBand } from '../theme/bands'
 import { useCelebrations, type CelebrationEvent } from './celebrations'
 import { controlPresets, pocketMoneySuggestion } from './presets'
-import type { Child, Controls, Goal, Guardian, Jars, PocketMoney, Request, Txn } from './types'
+import type { Child, Controls, DeclineReason, Goal, Guardian, Jars, PocketMoney, Request, RiskProfile, Sim, SimSnapshot, Sip, Txn } from './types'
 
 export type KycStatus = 'verified' | 'pending' | 'failed'
 
@@ -19,6 +19,8 @@ interface DemoState {
   goals: Goal[]
   requests: Request[]
   transactions: Txn[]
+  sims: Record<string, Sim>
+  sips: Sip[]
   /** Child currently being set up in the onboarding flow. */
   draftChildId: string | null
 }
@@ -26,7 +28,7 @@ interface DemoState {
 interface DemoActions {
   setPersona: (id: PersonaId) => void
   setScenario: (patch: Partial<Pick<DemoState, 'kycStatus' | 'pocketMoneyLate' | 'declineNextSip'>>) => void
-  advanceDay: () => void
+  advanceDay: (days?: number) => void
   reset: () => void
   addChild: (name: string, ageBand: AgeBand) => string
   updateChild: (id: string, patch: Partial<Omit<Child, 'id'>>) => void
@@ -42,6 +44,13 @@ interface DemoActions {
   requestGoalPurchase: (goalId: string) => 'auto' | 'pending'
   resolveRequest: (id: string, action: 'approve' | 'askLater', opts?: { amount?: number }) => void
   reask: (id: string) => void
+  // Flow 3: simulator and real SIP
+  simTrade: (childId: string, fundId: string, amount: number, side: 'buy' | 'sell') => void
+  simAdvance: (childId: string, weeks: number) => void
+  setQuiz: (childId: string, quiz: NonNullable<Sim['quiz']>) => void
+  submitSip: (childId: string, p: { fundId: string; amount: number; profile: RiskProfile; snapshot: SimSnapshot; reasonChip?: string; resubmissionOf?: string }) => string
+  decideSip: (id: string, d: { approve: true } | { approve: false; reasons: DeclineReason[]; note?: string; suggestedAmount?: number }) => void
+  markSipSeen: (id: string) => void
 }
 
 const guardian: Guardian = {
@@ -63,6 +72,8 @@ const initial: DemoState = {
   goals: [],
   requests: [],
   transactions: [],
+  sims: {},
+  sips: [],
   draftChildId: null,
 }
 
@@ -136,6 +147,12 @@ function purchase(s: DemoState, goal: Goal): Partial<DemoState> {
   }
 }
 
+export const SIM_CASH = 100000
+export const SIM_START_WEEK = 12
+export const defaultSim = (): Sim => ({ week: SIM_START_WEEK, cash: SIM_CASH, trades: [] })
+/** Stable fallback for selectors (a fresh object each render would loop). */
+export const EMPTY_SIM: Sim = defaultSim()
+
 export const STORAGE_KEY = 'chiku-demo-v1'
 
 export const useStore = create<DemoState & DemoActions>()(
@@ -144,7 +161,7 @@ export const useStore = create<DemoState & DemoActions>()(
       ...initial,
       setPersona: (id) => set({ activePersona: id }),
       setScenario: (patch) => set(patch),
-      advanceDay: () => set((s) => ({ demoDayOffset: s.demoDayOffset + 1 })),
+      advanceDay: (days = 1) => set((s) => ({ demoDayOffset: s.demoDayOffset + days })),
       reset: () => {
         useCelebrations.setState({ queue: [] })
         set({ ...initial })
@@ -191,6 +208,17 @@ export const useStore = create<DemoState & DemoActions>()(
             draftChildId: null,
             children: [aarav, ananya, rohan],
             requests: [],
+            sips: [],
+            sims: {
+              [rohan.id]: {
+                week: SIM_START_WEEK,
+                cash: SIM_CASH - 80000,
+                trades: [
+                  { week: 0, fundId: 'flexi', amount: 50000, side: 'buy' as const },
+                  { week: 4, fundId: 'mid', amount: 30000, side: 'buy' as const },
+                ],
+              },
+            },
             goals: [
               {
                 id: uid('g_'), childId: ananya.id, templateId: 'headphones', title: 'Headphones', emoji: '🎧', target: 2499,
@@ -279,6 +307,7 @@ export const useStore = create<DemoState & DemoActions>()(
         if (!req) return
         const setStatus = (status: Request['status'], extra: Partial<Request> = {}) =>
           s.requests.map((r) => (r.id === id ? ({ ...r, status, ...extra } as Request) : r))
+        if (req.kind === 'sip') return
         if (action === 'askLater') {
           set({ requests: setStatus('askLater', { retryAfterDay: s.demoDayOffset + 1 }) })
           return
@@ -307,6 +336,61 @@ export const useStore = create<DemoState & DemoActions>()(
         }
       },
 
+      simTrade: (childId, fundId, amount, side) =>
+        set((s) => {
+          const sim = s.sims[childId] ?? defaultSim()
+          if (side === 'buy' && amount > sim.cash) return {}
+          return {
+            sims: {
+              ...s.sims,
+              [childId]: { ...sim, cash: sim.cash + (side === 'buy' ? -amount : amount), trades: [...sim.trades, { week: sim.week, fundId, amount, side }] },
+            },
+          }
+        }),
+      simAdvance: (childId, weeks) =>
+        set((s) => {
+          const sim = s.sims[childId] ?? defaultSim()
+          return { sims: { ...s.sims, [childId]: { ...sim, week: Math.min(104, sim.week + weeks) } } }
+        }),
+      setQuiz: (childId, quiz) =>
+        set((s) => ({ sims: { ...s.sims, [childId]: { ...(s.sims[childId] ?? defaultSim()), quiz } } })),
+
+      submitSip: (childId, p) => {
+        const s = get()
+        const id = uid('r_')
+        const decline = s.declineNextSip
+        const req: Request = {
+          id, childId, kind: 'sip', fundId: p.fundId, amount: p.amount, dayOfMonth: 5, profile: p.profile,
+          snapshot: p.snapshot, reasonChip: p.reasonChip, resubmissionOf: p.resubmissionOf,
+          status: decline ? 'declined' : 'pending', createdDay: s.demoDayOffset,
+          ...(decline ? { decision: { reasons: ['tooRisky' as const], note: 'Auto-declined by the demo toolbar', decidedDay: s.demoDayOffset } } : {}),
+        }
+        set({ requests: [...s.requests, req], declineNextSip: false })
+        return id
+      },
+
+      decideSip: (id, d) => {
+        const s = get()
+        const req = s.requests.find((r) => r.id === id)
+        if (!req || req.kind !== 'sip') return
+        if (d.approve) {
+          set({
+            requests: s.requests.map((r) => (r.id === id ? { ...r, status: 'approved' as const } : r)),
+            sips: [...s.sips, { id: uid('s_'), childId: req.childId, fundId: req.fundId, amount: req.amount, dayOfMonth: req.dayOfMonth, startedDay: s.demoDayOffset }],
+          })
+        } else {
+          set({
+            requests: s.requests.map((r) =>
+              r.id === id && r.kind === 'sip'
+                ? { ...r, status: 'declined' as const, decision: { reasons: d.reasons, note: d.note, suggestedAmount: d.suggestedAmount, decidedDay: s.demoDayOffset } }
+                : r,
+            ),
+          })
+        }
+      },
+      markSipSeen: (id) =>
+        set((s) => ({ requests: s.requests.map((r) => (r.id === id && r.kind === 'sip' ? { ...r, seen: true } : r)) })),
+
       reask: (id) =>
         set((s) => ({
           requests: s.requests.map((r) =>
@@ -318,9 +402,11 @@ export const useStore = create<DemoState & DemoActions>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 3,
+      version: 4,
       migrate: (persisted) => {
         const p = { ...initial, ...(persisted as object) } as DemoState
+        p.sims = p.sims ?? {}
+        p.sips = p.sips ?? []
         p.children = p.children.map((c) => ({ ...c, jars: c.jars ?? { spend: 0, save: 0, share: 0 }, split: c.split ?? defaultSplit[c.ageBand] }))
         return p
       },
