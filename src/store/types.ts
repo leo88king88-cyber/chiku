@@ -32,6 +32,10 @@ export interface Child {
   inviteCode: string
   inviteStatus: 'sent' | 'accepted'
   avatar?: string
+  /** Own-phone children (15-17) log in with this number. Younger children use a parent's phone. */
+  phone?: string
+  /** Own-phone children only: has completed the invite login on their own device. */
+  loggedIn?: boolean
   jars: Jars
   /** Percent of each pocket-money drop that goes to each jar (sums to 100). */
   split: Jars
@@ -138,6 +142,15 @@ export interface Sip {
   amount: number
   dayOfMonth: number
   startedDay: number
+}
+
+/** The guardian's login on this app, shared with the parent app's login and KYC. */
+export interface Account {
+  loggedIn: boolean
+  mobile: string
+  /** True when the number has no parent-app account yet, so sign-up and KYC are needed. */
+  isNew: boolean
+  kycSubmitted: boolean
 }
 
 export interface Guardian {

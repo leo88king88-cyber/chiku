@@ -4,6 +4,7 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { useDraftChild, useStore } from '../../store'
 import { useToast } from '../../store/toast'
+import { KycForm } from './KycForm'
 import { OnboardingLayout } from './OnboardingLayout'
 import { stepNo, useFlow } from './flow'
 
@@ -12,6 +13,8 @@ export function Kyc() {
   const child = useDraftChild()
   const kyc = useStore((s) => s.kycStatus)
   const guardian = useStore((s) => s.guardian)
+  const account = useStore((s) => s.account)
+  const resolveKyc = useStore((s) => s.resolveKyc)
   const setScenario = useStore((s) => s.setScenario)
   const toast = useToast((s) => s.show)
   const { step, total } = useFlow()
@@ -25,6 +28,7 @@ export function Kyc() {
   }, [kyc])
 
   if (!child) return <Navigate to="/p/add-child" replace />
+  if (account.isNew && !account.kycSubmitted) return <KycForm onBack={() => navigate('/p/add-child')} />
   const next = () => navigate('/p/controls')
 
   if (checking) {
@@ -93,6 +97,10 @@ export function Kyc() {
             </Button>
           )}
           <Button onClick={next} className="w-full">Continue setup anyway</Button>
+          <div className="flex flex-wrap justify-center gap-x-4">
+            <Button variant="ghost" className="!text-sm" onClick={() => resolveKyc('verified')}>Demo: mark as verified</Button>
+            {isPending && <Button variant="ghost" className="!text-sm" onClick={() => resolveKyc('failed')}>Demo: mark as failed</Button>}
+          </div>
         </>
       }
     >

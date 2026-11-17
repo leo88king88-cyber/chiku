@@ -29,6 +29,7 @@ function Body({ childId }: { childId: string }) {
   const day = useStore((s) => s.demoDayOffset)
   const parent = useStore((s) => s.guardian.name.split(' ')[0])
   const setPersona = useStore((s) => s.setPersona)
+  const advanceDay = useStore((s) => s.advanceDay)
   const toast = useToast((s) => s.show)
   if (!req || req.kind !== 'sip') return <Navigate to="/c/invest/sim" replace />
   if (req.status === 'approved') return <Navigate to="/c/invest/sip-confirmed" replace />
@@ -70,7 +71,7 @@ function Body({ childId }: { childId: string }) {
             {waitLeft > 0 ? (
               <>
                 <Button disabled className="w-full">You can ask again in {waitLeft} {waitLeft === 1 ? 'day' : 'days'}</Button>
-                <p className="t-caption text-ink-soft">Demo: use "Skip a week" in the toolbar.</p>
+                <Button variant="ghost" className="!text-sm" onClick={() => advanceDay(7)}>Demo: skip ahead a week</Button>
               </>
             ) : (
               <Button className="w-full !min-h-14" onClick={() => navigate(`/c/invest/request?resubmit=${req.id}`)}>Change and resubmit</Button>

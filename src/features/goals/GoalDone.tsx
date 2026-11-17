@@ -18,7 +18,7 @@ export function GoalDone() {
   const req = useStore((s) => s.requests.filter((r) => r.kind === 'goalPurchase' && r.goalId === id).at(-1))
   const day = useStore((s) => s.demoDayOffset)
   const parent = useStore((s) => s.guardian.name.split(' ')[0])
-  const { requestGoalPurchase, reask, markGoalSeen } = useStore.getState()
+  const { requestGoalPurchase, reask, markGoalSeen, advanceDay } = useStore.getState()
   const toast = useToast((s) => s.show)
   if (!goal || !child || goal.childId !== child.id) return <Navigate to="/c/home" replace />
   if (goal.status === 'active' || goal.status === 'pendingParent') return <Navigate to={`/c/goal/${goal.id}`} replace />
@@ -74,6 +74,7 @@ export function GoalDone() {
             {canReask ? 'Ask again' : 'You can ask again tomorrow'}
           </Button>
         )}
+        {snoozed && !canReask && <Button variant="ghost" className="!text-sm" onClick={() => advanceDay(1)}>Demo: skip to tomorrow</Button>}
         {goal.status === 'purchased' && (
           <Button className="w-full !min-h-14" onClick={() => { markGoalSeen(goal.id); navigate('/c/next-goal') }}>Pick your next goal</Button>
         )}

@@ -1,9 +1,16 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
-import { useStore, type KycStatus } from '../store'
+import { useStore } from '../store'
 import { smartHome } from './smartHome'
-import { flowStarts, personaList, personas, type PersonaId } from './personas'
+import { personaList, type PersonaId } from './personas'
+
+const deviceNote: Record<PersonaId, string> = {
+  priya: 'Parent, 38',
+  aarav: "9 · Priya's phone",
+  ananya: "13 · Priya's phone",
+  rohan: '16 · own phone',
+}
 
 export function DemoToolbar() {
   const [open, setOpen] = useState(false)
@@ -11,11 +18,12 @@ export function DemoToolbar() {
   const { pathname } = useLocation()
   const s = useStore()
 
-  const go = (persona: PersonaId, path: string) => {
+  const go = (persona: PersonaId) => {
     // Persona first, so every screen settles; then route. Screens we are leaving may redirect
-    // when the persona changes (e.g. "no child for this persona"), and the toolbar must win.
+    // when the persona changes, and the toolbar must win. Replace, so history never links two phones.
+    const path = smartHome(persona)
     s.setPersona(persona)
-    setTimeout(() => navigate(path), 80)
+    setTimeout(() => navigate(path, { replace: true }), 80)
     setOpen(false)
   }
 
@@ -36,107 +44,40 @@ export function DemoToolbar() {
         <h2 className="text-base font-bold">Demo controls</h2>
         <p className="mt-1 text-paper/70">Route: <code>{pathname}</code></p>
 
-        <Section title="Persona">
+        <Section title="Who is using the app">
           <div className="grid grid-cols-2 gap-2">
             {personaList.map((p) => (
               <button
                 key={p.id}
-                onClick={() => go(p.id, smartHome(p.id))}
+                onClick={() => go(p.id)}
                 aria-pressed={s.activePersona === p.id}
                 className={`min-h-11 rounded-xl px-2 text-left font-bold ${s.activePersona === p.id ? 'bg-saffron text-ink' : 'bg-white/10'}`}
               >
                 {p.emoji} {p.name}
-                <span className="block font-normal opacity-80">{p.role}</span>
+                <span className="block font-normal opacity-80">{deviceNote[p.id]}</span>
               </button>
             ))}
           </div>
+          <p className="mt-2 text-paper/70">Aarav and Ananya borrow Priya's phone. Rohan has his own, so he logs in separately.</p>
         </Section>
 
-        <Section title="Design flows">
-          <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => { navigate('/c/wireframe?flow=parent'); setOpen(false) }} className="min-h-11 rounded-xl bg-white/10 px-2 text-left">Priya's flow →</button>
-            <button onClick={() => { navigate('/c/wireframe?flow=child'); setOpen(false) }} className="min-h-11 rounded-xl bg-white/10 px-2 text-left">Ananya's flow →</button>
-          </div>
-        </Section>
-
-        <Section title="Jump to flow">
-          <div className="flex flex-col gap-2">
-            {flowStarts.map((f) => (
-              <button key={f.label} onClick={() => go(f.persona, f.path)} className="min-h-11 rounded-xl bg-white/10 px-3 text-left">
-                {f.label}
-              </button>
-            ))}
-          </div>
-        </Section>
-
-        <Section title="Scenarios">
-          <label className="flex min-h-11 items-center justify-between gap-2">
-            Guardian KYC
-            <select
-              value={s.kycStatus}
-              onChange={(e) => s.setScenario({ kycStatus: e.target.value as KycStatus })}
-              className="min-h-11 rounded-lg bg-white px-2 text-ink"
-            >
-              <option value="verified">Verified</option>
-              <option value="pending">Pending</option>
-              <option value="failed">Failed</option>
-            </select>
-          </label>
-          <Toggle label="Pocket money late" checked={s.pocketMoneyLate} onChange={(v) => s.setScenario({ pocketMoneyLate: v })} />
-          <Toggle label="Auto-decline next SIP" checked={s.declineNextSip} onChange={(v) => s.setScenario({ declineNextSip: v })} />
-          <div className="flex min-h-11 items-center justify-between gap-2">
-            <span>Demo day +{s.demoDayOffset}</span>
-            <Button variant="secondary" onClick={() => s.advanceDay(1)} className="!min-h-11 !px-3 !text-sm">Next day</Button>
-          </div>
-          <Button variant="secondary" onClick={() => s.advanceDay(7)} className="w-full !text-sm">Skip a week</Button>
-        </Section>
-
-        <Section title="Money">
-          <Button
-            variant="secondary"
-            className="w-full !text-sm"
-            onClick={() => {
-              const st = useStore.getState()
-              const persona = personas[st.activePersona]
-              const targets = st.children.filter((c) => persona.view === 'parent' || c.name.toLowerCase() === persona.name.toLowerCase())
-              ;(targets.length ? targets : st.children.slice(0, 1)).forEach((c) => st.receivePocketMoney(c.id))
-              setOpen(false)
-            }}
-          >
-            Drop pocket money now
+        <Section title="Data">
+          <Button variant="secondary" className="w-full !text-sm" onClick={() => { s.loadDemoFamily(); navigate('/p/home', { replace: true }); setOpen(false) }}>
+            Load demo family (skip onboarding)
           </Button>
           <Button
             variant="secondary"
             className="mt-2 w-full !text-sm"
             onClick={() => {
-              const st = useStore.getState()
-              const persona = personas[st.activePersona]
-              const c = st.children.find((x) => x.name.toLowerCase() === persona.name.toLowerCase()) ?? st.children[0]
-              if (c) st.addBonusToSave(c.id, 500)
+              s.reset()
+              // Wait a tick: logging out makes the parent gate redirect, and the toolbar must win.
+              setTimeout(() => navigate('/', { replace: true }), 80)
               setOpen(false)
             }}
           >
-            Birthday money +₹500 to Save
+            Reset demo data
           </Button>
         </Section>
-
-        <Section title="Data">
-          <Button variant="secondary" className="w-full !text-sm" onClick={() => { s.loadDemoFamily(); navigate('/p/home'); setOpen(false) }}>
-            Load demo family (skip onboarding)
-          </Button>
-        </Section>
-
-        <Button
-          variant="secondary"
-          className="mt-4 w-full !text-sm"
-          onClick={() => {
-            s.reset()
-            navigate('/')
-            setOpen(false)
-          }}
-        >
-          Reset demo data
-        </Button>
       </aside>
     </>
   )
@@ -148,14 +89,5 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-saffron">{title}</h3>
       {children}
     </section>
-  )
-}
-
-function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2">
-      {label}
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="size-6 accent-saffron" />
-    </label>
   )
 }

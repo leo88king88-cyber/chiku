@@ -9,7 +9,7 @@ import type { Child } from '../../store/types'
 import { GoalCard } from './GoalCard'
 import { LateBanner } from './LateBanner'
 import { RequestStatus } from './RequestStatus'
-import { WireframeLink } from '../wireframe/WireframeLink'
+import { DeviceActions } from './DeviceActions'
 
 /** 8-11: big pictures, a mascot, almost no typing. */
 export function HomeKid({ child }: { child: Child }) {
@@ -57,7 +57,7 @@ export function HomeKid({ child }: { child: Child }) {
       <Button variant="secondary" onClick={() => navigate('/c/request-money')} className="w-full !min-h-14">
         🙏 I need extra money
       </Button>
-      <WireframeLink flow="child">See the child flow (Ananya, 13)</WireframeLink>
+      <DeviceActions child={child} />
     </main>
   )
 }

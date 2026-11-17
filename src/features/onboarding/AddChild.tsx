@@ -18,18 +18,21 @@ export function AddChild() {
   const editing = draft
   const [name, setName] = useState(editing?.name ?? '')
   const [band, setBand] = useState<AgeBand | null>(editing?.ageBand ?? null)
+  const [phone, setPhone] = useState(editing?.phone ?? '')
 
-  const valid = name.trim().length >= 2 && band !== null
+  const ownPhone = band === '15-17'
+  const valid = name.trim().length >= 2 && band !== null && (!ownPhone || phone.length === 10)
   const next = () => {
     if (!valid || !band) return
     if (editing) {
       store.updateChild(editing.id, {
         name: name.trim(),
         ageBand: band,
+        phone: ownPhone ? phone : undefined,
         ...(band !== editing.ageBand ? { controls: { ...controlPresets[band], isDefault: true } } : {}),
       })
     } else {
-      store.addChild(name, band)
+      store.addChild(name, band, ownPhone ? phone : undefined)
     }
     // Further children share your existing verification, so skip KYC.
     navigate(second ? '/p/controls?second=1' : '/p/kyc')
@@ -74,6 +77,16 @@ export function AddChild() {
           )
         })}
       </fieldset>
+      {ownPhone && (
+        <label className="flex flex-col gap-2">
+          <span className="font-bold">{name.trim() || 'Your child'}'s mobile number</span>
+          <span className="sticker flex min-h-14 items-center gap-2 px-4">
+            <span className="font-bold text-ink-soft">+91</span>
+            <input value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))} inputMode="numeric" autoComplete="off" aria-label="Child's mobile number" placeholder="98123 45678" className="min-h-12 flex-1 bg-transparent text-[18px] outline-none" />
+          </span>
+          <span className="t-caption text-ink-soft">At 15 and over, they use Chiku on their own phone and log in with this number. We send the invite there.</span>
+        </label>
+      )}
     </OnboardingLayout>
   )
 }

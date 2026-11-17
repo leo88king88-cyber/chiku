@@ -3,7 +3,8 @@ import { Button } from '../../components/ui/Button'
 import { formatINR } from '../../lib/money'
 import { nextOccurrence, ordinal } from '../../lib/dates'
 import { fundById } from '../invest/funds'
-import { WireframeLink } from '../wireframe/WireframeLink'
+import { hasOwnPhone, personaIdForChild } from '../../demo/personas'
+import { smartHome } from '../../demo/smartHome'
 import { useStore } from '../../store'
 import { useToast } from '../../store/toast'
 import { ageBandInfo } from '../../store/presets'
@@ -12,9 +13,10 @@ export function ParentHome() {
   const navigate = useNavigate()
   const { children, guardian, kycStatus, requests, pocketMoneyLate, sips } = useStore()
   const receive = useStore((s) => s.receivePocketMoney)
+  const setPersona = useStore((s) => s.setPersona)
   const pending = requests.filter((r) => r.status === 'pending').length
   const toast = useToast((s) => s.show)
-  if (children.length === 0) return <Navigate to="/p/welcome" replace />
+  if (children.length === 0) return <Navigate to="/p/add-child" replace />
 
   const attention: { text: string; action?: string; onAction?: () => void }[] = []
   if (kycStatus !== 'verified')
@@ -72,15 +74,27 @@ export function ParentHome() {
             {sips.filter((x) => x.childId === c.id).map((x) => (
               <p key={x.id} className="t-caption rounded-xl bg-leaf/15 px-3 py-2">SIP: {formatINR(x.amount)}/month in {fundById(x.fundId)?.name}</p>
             ))}
+            {c.pocketMoney?.mandate === 'active' && (
+              <Button variant="secondary" onClick={() => { receive(c.id); toast(`Sent ${formatINR(c.pocketMoney!.amount)} to ${c.name}`) }}>
+                Send {formatINR(c.pocketMoney.amount)} now
+              </Button>
+            )}
             {c.inviteStatus === 'sent' && (
               <Button variant="secondary" onClick={() => toast(`Reminder sent to ${c.name}`)}>Resend invite</Button>
+            )}
+            {hasOwnPhone(c) ? (
+              <>
+                <p className="t-caption text-ink-soft">{c.name} uses Chiku on their own phone{c.phone ? ` (+91 ${c.phone.slice(0, 5)} ${c.phone.slice(5)})` : ''}.</p>
+                <Button variant="ghost" onClick={() => { const id = personaIdForChild(c); setPersona(id); navigate(smartHome(id), { replace: true }) }}>Open on {c.name}'s phone (demo)</Button>
+              </>
+            ) : (
+              <Button onClick={() => { const id = personaIdForChild(c); setPersona(id); navigate(smartHome(id), { replace: true }) }}>Hand the phone to {c.name}</Button>
             )}
           </article>
         ))}
       </section>
 
       <Button onClick={() => navigate('/p/add-child?second=1')} variant="secondary" className="w-full">+ Add another child</Button>
-      <WireframeLink flow="parent">See Priya's flow</WireframeLink>
     </main>
   )
 }

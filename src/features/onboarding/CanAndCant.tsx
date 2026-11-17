@@ -2,17 +2,19 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { DisclosureBanner } from '../../components/ui/DisclosureBanner'
 import { OnboardingLayout } from './OnboardingLayout'
+import { useStore } from '../../store'
 import { can, cant } from './copy'
 import { stepNo, useFlow } from './flow'
 
 export function CanAndCant() {
   const navigate = useNavigate()
   const { step, total } = useFlow()
+  const loggedIn = useStore((s) => s.account.loggedIn)
   return (
     <OnboardingLayout
       step={step(stepNo.explainer)}
       total={total}
-      footer={<Button onClick={() => navigate('/p/add-child')} className="w-full">Got it, continue</Button>}
+      footer={<Button onClick={() => navigate(loggedIn ? '/p/add-child' : '/p/login')} className="w-full">Got it, continue</Button>}
     >
       <h1 className="t-display">What your child can, and can never, do</h1>
       <section aria-labelledby="can" className="sticker p-4">

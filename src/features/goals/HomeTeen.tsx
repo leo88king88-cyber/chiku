@@ -7,10 +7,10 @@ import { ChoiceChips } from '../../components/ui/ChoiceChips'
 import { Sheet } from '../../components/ui/Sheet'
 import { formatINR } from '../../lib/money'
 import { nextOccurrence } from '../../lib/dates'
-import { currentGoalOf, useActivePersona, useStore } from '../../store'
+import { currentGoalOf, useStore } from '../../store'
 import type { Child } from '../../store/types'
 import { InvestCard } from '../invest/InvestCard'
-import { WireframeLink } from '../wireframe/WireframeLink'
+import { DeviceActions } from './DeviceActions'
 import { GoalCard } from './GoalCard'
 import { LateBanner } from './LateBanner'
 import { RequestStatus } from './RequestStatus'
@@ -34,7 +34,6 @@ export function HomeTeen({ child }: { child: Child }) {
   const goal = useStore((s) => currentGoalOf(s.goals, child.id))
   const setSplit = useStore((s) => s.setSplit)
   const insights = useSpendInsights(child.id)
-  const persona = useActivePersona()
   const [editing, setEditing] = useState(false)
   const { spend, save, share } = child.jars
   const key = `${child.split.spend}/${child.split.save}/${child.split.share}`
@@ -115,7 +114,7 @@ export function HomeTeen({ child }: { child: Child }) {
       <RequestStatus childId={child.id} kid={false} />
       <Button variant="secondary" onClick={() => navigate('/c/request-money')} className="w-full">Request extra money</Button>
 
-      {persona.id === 'ananya' && <WireframeLink flow="child">See Ananya's flow</WireframeLink>}
+      <DeviceActions child={child} />
 
       <Sheet open={editing} onClose={() => setEditing(false)} title="My split">
         <h2 className="t-title">Split my pocket money</h2>

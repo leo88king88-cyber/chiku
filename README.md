@@ -6,11 +6,19 @@ A mobile-first, front-end prototype of a kids' money and investing app for India
 
 ## What it demonstrates
 
+Chiku is a **separate app** from the existing investing app (called Investo here; change `PARENT_APP` in `src/lib/brand.ts`). It uses the same login and KYC, so existing Investo users skip KYC and brand-new users can sign up and complete it.
+
 | Flow | Who | What you see |
 |---|---|---|
-| 1. Parent onboarding and linking | Priya (parent) | Welcome, "what your child can and can never do", add child, guardian KYC "verified from your existing account" (pending and failed states), age-based control presets (or skip for safe defaults), monthly pocket money via mock UPI AutoPay, success with a child invite, second-child shortcut |
-| 2. Savings goal | Aarav (9), Ananya (13) | Spend/save/share jars, picture-grid goal creation (or "ask a parent to fill in"), pocket money arriving and filling the jar, milestone and goal-complete celebrations, parent purchase approval, "pick your next goal". Late pocket money, extra-money requests with a reason, and "ask again tomorrow" |
-| 3. Simulated to real investing | Rohan (16) with Priya approving | Practice with virtual ₹1,00,000, fund pages, weekly recap, honest comparison against an index fund, risk quiz, real SIP request with simulator history attached, parent approval (UPI AutoPay) or structured decline (too risky / wait / smaller amount), resubmit, SIP confirmation, graduation-at-18 teaser |
+| 1. Parent onboarding and linking | Priya (parent) | A push notification on her lock screen (first screen), welcome, "what your child can and can never do", login with the Investo login (existing user, or new user with sign-up and a KYC form), add child (mobile number for 15+), guardian KYC (verified from the existing account, or pending/failed), age-based control presets (or skip for safe defaults), monthly pocket money via mock UPI AutoPay, success with a child invite, second-child shortcut |
+| 2. Savings goal | Aarav (9), Ananya (13), on Priya's phone | Spend/save/share jars, picture-grid goal creation (or "ask a parent to fill in"), pocket money arriving and filling the jar, milestone and goal-complete celebrations, parent purchase approval, "pick your next goal". Extra-money requests with a reason, and "ask again tomorrow" |
+| 3. Simulated to real investing | Rohan (16), on his own phone | A message from his parent on his lock screen, his own login (mobile + OTP), practice with virtual ₹1,00,000, fund pages, weekly recap, honest comparison against an index fund, risk quiz, real SIP request with simulator history attached, parent approval (UPI AutoPay) or structured decline (too risky / wait / smaller amount), resubmit, SIP confirmation, graduation-at-18 teaser |
+
+### Phones and logins
+
+- **Priya's phone** is used by Priya, Aarav and Ananya. Children under 15 have no phone of their own. Priya taps **Hand the phone to Aarav** on her dashboard. Inside a child's session, back never reaches Priya's screens (browser or in-app back is blocked from leaving the child area). The only way out is **Hand back to Priya**, behind her PIN (demo: any 4 digits).
+- **Rohan's phone** is separate. Children aged 15 to 17 get their own phone, so the parent enters their mobile number when adding them. Rohan opens the invite message, logs in with that number and an OTP (demo: any 6 digits), picks an avatar, and can **Log out**. The invite only works for the number it was sent to.
+- **Parent login:** the demo number `98765 43210` has an existing Investo account (KYC reused). Any other number is a new user: OTP, name, then a short KYC form (PAN in the right format plus DigiLocker consent). New KYC goes to "under review"; the demo links on that screen mark it verified or failed.
 
 The UI adapts by age band. Aarav (8-11) gets big pictures, a mascot and almost no typing. Ananya (12-14) gets a cleaner teen layout with her own split and a "where did my money go" card. Rohan (15-17) gets a near-adult layout.
 
@@ -42,50 +50,50 @@ A design-flow page for the two core journeys, **Priya** (parent, onboarding thro
 
 ## The demo toolbar
 
-On desktop the app sits in a phone frame with the toolbar beside it. On a phone the toolbar is behind the "Demo" pill at the top right.
+On desktop the app sits in a phone frame with the toolbar beside it, and a label above the phone says whose phone it is. On a phone the toolbar is behind the "Demo" pill at the top right.
 
-- **Persona**: Priya, Aarav, Ananya, Rohan. Switching lands on the open item: Priya goes to approvals if anything is waiting, a child goes to their pending approval or SIP status.
-- **Jump to flow**: start of each flow.
-- **Scenarios**: guardian KYC (verified, pending, failed), pocket money late, auto-decline next SIP, "Next day", "Skip a week".
-- **Money**: "Drop pocket money now" (active child, or all children from Priya's view) and "Birthday money +₹500 to Save".
-- **Data**: "Load demo family" (Aarav, Ananya, Rohan with jars, a goal and a practice portfolio), and "Reset demo data".
+- **Who is using the app:** Priya, Aarav, Ananya, Rohan. Switching lands on the open item (for example Priya's approvals when something is waiting). Rohan's first switch starts at his lock screen, because he has to log in.
+- **Data:** **Load demo family** (Aarav, Ananya and Rohan with jars, a goal and a practice portfolio; Rohan's invite is not yet accepted) and **Reset demo data** (back to Priya's lock screen).
+
+The old scenario switches are now part of the screens themselves: **Send ₹500 now** on Priya's dashboard replaces "drop pocket money", and small "Demo: skip to tomorrow" / "skip ahead a week" links and "Demo: mark as verified / failed" links appear where a wait or a KYC review is shown.
 
 ## 5-minute demo script
 
-Setup: open the app, toolbar → **Reset demo data**. Persona is **Priya**. Tip: let each celebration overlay finish (about 3 seconds) before the next tap; a drop can queue an arrival, a milestone and a goal-complete moment in a row.
+Setup: open the app and toolbar → **Reset demo data**. The first screen is Priya's lock screen. Tip: let each celebration overlay finish (about 3 seconds) before the next tap.
 
-**Part 1: Parent onboarding (about 1:45)**
-1. Welcome → **Get started** → **Got it, continue**.
-2. Type **Aarav**, choose **8 to 11 · Little saver** → **Continue**.
-3. KYC shows "You're verified" from the existing account. Edge state: toolbar *Guardian KYC* → **Failed** (explains the reason, **Retry verification** moves it to pending), then set it back to **Verified** → **Continue**.
-4. Controls: point out the age preset and **Why these settings?** → **Looks good** (alternatives: **Customise**, or **Skip for now, use safe defaults**).
-5. Pocket money: ₹500 on the 1st → **Set up UPI AutoPay** → **PhonePe** → **Approve** → any 6-digit PIN.
-6. Success screen with the invite code → **Go to dashboard**. Toolbar → **Load demo family** to bring in all three children.
+**Part 1: Priya signs up (about 1:45)**
+1. Tap the **Investo** notification "Meet Chiku".
+2. Welcome → **Get started** → **Got it, continue**.
+3. Login: the number is prefilled and has an existing Investo account → **Send OTP** → any 6 digits. (To show a new user, use any other number: OTP, name, then a KYC form.)
+4. Type **Aarav**, choose **8 to 11 · Little saver** → **Continue**.
+5. KYC shows "You're verified" because it reuses the Investo KYC → **Continue**.
+6. Controls: **Looks good**. Pocket money: ₹500 on the 1st → **Set up UPI AutoPay** → **PhonePe** → **Approve** → any 6-digit PIN.
+7. Success with the invite code → **Hand the phone to Aarav** → pick a buddy → **Let's go!** (Press back: it stays in Aarav's space.)
 
-**Part 2: Savings goal (about 1:45)**
-7. Toolbar persona **Aarav** (big kid layout, mascot, jars). Empty state → **Pick a goal** → **Lego set** → **Yes, that's my goal!**
-8. Toolbar → **Drop pocket money now**: coins fall, jars rise. Drop once more → **You did it, Aarav!** → **See it!** → **Ask Priya to buy it**.
-9. Toolbar persona **Priya** (lands on Approvals) → **Approve purchase**. Toolbar persona **Aarav** (lands on "Approved!") → **Pick your next goal**.
-10. Toolbar persona **Ananya** (teen layout): **Change** the split, scroll to "Where did my money go?". Toggle *Pocket money late* to show the late banner, then turn it off.
-11. Ananya → **Request extra money** → ₹500 → **A gift** → **Send request**. Persona **Priya** → **Ask again tomorrow**. Persona **Ananya** (button locked) → toolbar **Next day** → **Ask again**.
+**Part 2: Savings goal on Priya's phone (about 1:45)**
+8. Toolbar → **Load demo family**. Priya's dashboard shows all three children.
+9. **Hand the phone to Aarav** → **Pick a goal** → **Lego set** → **Yes, that's my goal!** → tap **←** to go home → scroll down and **Hand back to Priya** → PIN `1234`.
+10. On Aarav's card tap **Send ₹500 now** twice, then **Hand the phone to Aarav**: coins fall, jars rise, then **You did it, Aarav!** → **See it!** → **Ask Priya to buy it** → **Back home** → **Hand back to Priya** (PIN). Priya lands on Approvals → **Approve purchase**.
+11. Dashboard → **Hand the phone to Aarav**: "Approved!" → **Pick your next goal**. Hand back.
+12. **Hand the phone to Ananya** (teen layout, split, "Where did my money go?") → **Request extra money** → ₹500 → **A gift** → **Send request** (lands on home) → **Hand back to Priya** (PIN). Priya: **Ask again tomorrow**. Hand to Ananya: locked button → **Demo: skip to tomorrow** → **Ask again**.
 
-**Part 3: Simulated to real SIP (about 1:30)**
-12. Toolbar persona **Rohan** → **Practice portfolio** (chart, weekly recap) → **Fast-forward 1 week** → **Compare** (honest framing against the index fund) → **I'm ready for a real SIP**.
-13. Quiz: **Invest a bit more**, **3 years or more**, **Growing it**, **True** → **Continue**. Keep the index fund, choose **₹500** → **Send to Priya** (simulator history attached).
-14. Toolbar persona **Priya** (lands on Approvals, sees the history and risk check) → **Decline…** → **Too risky** + **Smaller amount** → **Send decision**.
-15. Toolbar persona **Rohan** (sees the reasons) → **Change and resubmit** (prefilled with a lower-risk fund and the suggested amount) → **Send to Priya**.
-16. Toolbar persona **Priya** → **Approve SIP** → **PhonePe** → **Approve** → PIN. Toolbar persona **Rohan** → "Your first real SIP is on!" → **What happens when I turn 18?**
+**Part 3: Rohan on his own phone (about 1:30)**
+13. Toolbar persona **Rohan** (his own phone, label above the phone changes): lock screen with a message from Priya → tap it → his number is prefilled → **Send OTP** → any 6 digits → pick a buddy → **Let's go!**
+14. **Practice portfolio** (chart, weekly recap) → **Fast-forward 1 week** → **Compare** → **I'm ready for a real SIP**.
+15. Quiz: **Invest a bit more**, **3 years or more**, **Growing it**, **True** → **Continue** → keep the index fund, **₹500** → **Send to Priya**.
+16. Toolbar persona **Priya** (lands on Approvals with his history) → **Decline…** → **Too risky** + **Smaller amount** → **Send decision**.
+17. Toolbar persona **Rohan** (sees the reasons) → **Change and resubmit** → **Send to Priya**. Persona **Priya** → **Approve SIP** → **PhonePe** → **Approve** → PIN. Persona **Rohan** → "Your first real SIP is on!" → **What happens when I turn 18?**
 
 ## Project structure
 
 ```
 src/
-  app/          router (lazy screens), AppShell, PhoneFrame, error screen
+  app/          router (lazy screens), AppShell, PhoneFrame, error screen, parent login gate
   demo/         DemoToolbar, personas, smart persona routing
   store/        Zustand store (persisted), types, presets, celebration queue
   theme/        age bands (kid / teen / pro) mapped to CSS variables in index.css
   components/   ui/ (Button, Sheet, Jar, ProgressRing, LineChart…), mascot/
-  features/     onboarding/  goals/  invest/  parent/  shell/
+  features/     auth/ (mobile + OTP)  onboarding/  goals/  invest/  parent/  shell/  wireframe/
   lib/          money (₹ grouping), dates
 ```
 

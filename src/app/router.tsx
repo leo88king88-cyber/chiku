@@ -5,12 +5,16 @@ import { NotFound } from '../features/shell/NotFound'
 import { AppShell } from './AppShell'
 import { WireframeShell } from '../features/wireframe/WireframeShell'
 import { ErrorScreen } from './ErrorScreen'
+import { ParentGate } from './ParentGate'
 import { RootRedirect } from './RootRedirect'
 
 /** Code-split every screen; AppShell shows a skeleton while a chunk loads. */
 const screen = <T extends Record<string, React.ComponentType<never>>>(load: () => Promise<T>, name: keyof T) =>
   lazy(() => load().then((m) => ({ default: m[name] as React.ComponentType })))
 
+const Notify = screen(() => import('../features/onboarding/Notify'), 'Notify')
+const Login = screen(() => import('../features/onboarding/Login'), 'Login')
+const ChildNotify = screen(() => import('../features/goals/ChildNotify'), 'ChildNotify')
 const Welcome = screen(() => import('../features/onboarding/Welcome'), 'Welcome')
 const CanAndCant = screen(() => import('../features/onboarding/CanAndCant'), 'CanAndCant')
 const AddChild = screen(() => import('../features/onboarding/AddChild'), 'AddChild')
@@ -56,15 +60,23 @@ const routes: RouteObject[] = [
     children: [
       { path: '/', element: <RootRedirect /> },
       { path: '/join/:code', element: <Join /> },
+      { path: '/p/notify', element: <Notify /> },
       { path: '/p/welcome', element: <Welcome /> },
       { path: '/p/can-and-cant', element: <CanAndCant /> },
-      { path: '/p/add-child', element: <AddChild /> },
-      { path: '/p/kyc', element: <Kyc /> },
-      { path: '/p/controls', element: <Controls /> },
-      { path: '/p/pocket-money', element: <PocketMoney /> },
-      { path: '/p/success', element: <Success /> },
-      { path: '/p/home', element: <ParentHome /> },
-      { path: '/p/approvals', element: <Approvals /> },
+      { path: '/p/login', element: <Login /> },
+      { path: '/c/notify', element: <ChildNotify /> },
+      {
+        element: <ParentGate />,
+        children: [
+          { path: '/p/add-child', element: <AddChild /> },
+          { path: '/p/kyc', element: <Kyc /> },
+          { path: '/p/controls', element: <Controls /> },
+          { path: '/p/pocket-money', element: <PocketMoney /> },
+          { path: '/p/success', element: <Success /> },
+          { path: '/p/home', element: <ParentHome /> },
+          { path: '/p/approvals', element: <Approvals /> },
+        ],
+      },
       {
         element: <ChildGate />,
         children: [

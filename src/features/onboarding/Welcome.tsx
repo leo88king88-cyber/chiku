@@ -14,7 +14,7 @@ export function Welcome() {
   const navigate = useNavigate()
   return (
     <OnboardingLayout
-      backTo="/p/home"
+      backTo="/p/notify"
       footer={
         <>
           <Button

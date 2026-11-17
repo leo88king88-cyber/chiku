@@ -4,7 +4,8 @@ import { personas, type PersonaId } from '../demo/personas'
 import type { AgeBand } from '../theme/bands'
 import { useCelebrations, type CelebrationEvent } from './celebrations'
 import { controlPresets, pocketMoneySuggestion } from './presets'
-import type { Child, Controls, DeclineReason, Goal, Guardian, Jars, PocketMoney, Request, RiskProfile, Sim, SimSnapshot, Sip, Txn } from './types'
+import { DEMO_MOBILE } from '../lib/brand'
+import type { Account, Child, Controls, DeclineReason, Goal, Guardian, Jars, PocketMoney, Request, RiskProfile, Sim, SimSnapshot, Sip, Txn } from './types'
 
 export type KycStatus = 'verified' | 'pending' | 'failed'
 
@@ -15,6 +16,7 @@ interface DemoState {
   declineNextSip: boolean
   demoDayOffset: number
   guardian: Guardian
+  account: Account
   children: Child[]
   goals: Goal[]
   requests: Request[]
@@ -30,7 +32,13 @@ interface DemoActions {
   setScenario: (patch: Partial<Pick<DemoState, 'kycStatus' | 'pocketMoneyLate' | 'declineNextSip'>>) => void
   advanceDay: (days?: number) => void
   reset: () => void
-  addChild: (name: string, ageBand: AgeBand) => string
+  addChild: (name: string, ageBand: AgeBand, phone?: string) => string
+  login: (mobile: string) => void
+  completeSignup: (name: string) => void
+  submitKyc: (pan: string) => void
+  resolveKyc: (status: 'verified' | 'failed') => void
+  childLogin: (childId: string, avatar: string) => void
+  childLogout: (childId: string) => void
   updateChild: (id: string, patch: Partial<Omit<Child, 'id'>>) => void
   updateControls: (id: string, patch: Partial<Controls>) => void
   setPocketMoney: (id: string, pm: PocketMoney | null) => void
@@ -69,6 +77,7 @@ const initial: DemoState = {
   declineNextSip: false,
   demoDayOffset: 0,
   guardian,
+  account: { loggedIn: false, mobile: DEMO_MOBILE, isNew: false, kycSubmitted: true },
   children: [],
   goals: [],
   requests: [],
@@ -85,7 +94,7 @@ const defaultSplit: Record<AgeBand, Jars> = {
 }
 const uid = (p: string) => p + Math.random().toString(36).slice(2, 8)
 
-function makeChild(name: string, ageBand: AgeBand, confirmed = false): Child {
+function makeChild(name: string, ageBand: AgeBand, confirmed = false, phone?: string): Child {
   const n = name.trim()
   return {
     id: uid('c_'),
@@ -95,6 +104,7 @@ function makeChild(name: string, ageBand: AgeBand, confirmed = false): Child {
     pocketMoney: null,
     inviteCode: `CHIKU-${n.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 6)}-${Math.floor(1000 + Math.random() * 9000)}`,
     inviteStatus: 'sent',
+    ...(phone ? { phone, loggedIn: false } : {}),
     jars: { spend: 0, save: 0, share: 0 },
     split: defaultSplit[ageBand],
   }
@@ -167,8 +177,26 @@ export const useStore = create<DemoState & DemoActions>()(
         useCelebrations.setState({ queue: [] })
         set({ ...initial })
       },
-      addChild: (name, ageBand) => {
-        const child = makeChild(name, ageBand)
+      login: (mobile) =>
+        set((s) => ({
+          account: { loggedIn: true, mobile, isNew: mobile !== DEMO_MOBILE, kycSubmitted: mobile === DEMO_MOBILE },
+          kycStatus: mobile === DEMO_MOBILE ? 'verified' : 'pending',
+          guardian: mobile === DEMO_MOBILE ? initial.guardian : { ...s.guardian, name: '', panMasked: '', phoneMasked: `+91 ${mobile.slice(0, 2)}•••• ${mobile.slice(-4)}` },
+        })),
+      completeSignup: (name) => set((s) => ({ guardian: { ...s.guardian, name: name.trim() } })),
+      submitKyc: (pan) =>
+        set((s) => ({
+          account: { ...s.account, kycSubmitted: true },
+          kycStatus: 'pending',
+          guardian: { ...s.guardian, panMasked: `${pan.slice(0, 3)}••••${pan.slice(-1)}` },
+        })),
+      resolveKyc: (status) => set({ kycStatus: status }),
+      childLogin: (childId, avatar) =>
+        set((s) => ({ children: s.children.map((c) => (c.id === childId ? { ...c, avatar, loggedIn: true, inviteStatus: 'accepted' as const } : c)) })),
+      childLogout: (childId) =>
+        set((s) => ({ children: s.children.map((c) => (c.id === childId ? { ...c, loggedIn: false } : c)) })),
+      addChild: (name, ageBand, phone) => {
+        const child = makeChild(name, ageBand, false, phone)
         set((s) => ({ children: [...s.children, child], draftChildId: child.id }))
         return child.id
       },
@@ -193,7 +221,8 @@ export const useStore = create<DemoState & DemoActions>()(
           })
           const aarav = mk('Aarav', '8-11', { spend: 120, save: 1500, share: 30 })
           const ananya = mk('Ananya', '12-14', { spend: 340, save: 1100, share: 60 }, { spend: 50, save: 40, share: 10 })
-          const rohan = mk('Rohan', '15-17', { spend: 500, save: 2000, share: 100 })
+          // Rohan has his own phone, so the demo starts with his invite not yet accepted and no login.
+          const rohan = { ...mk('Rohan', '15-17', { spend: 500, save: 2000, share: 100 }), inviteStatus: 'sent' as const, phone: '9812345678', loggedIn: false }
           const spends: [string, number, string, number][] = [
             ['Snacks', 60, 'Samosa and chai with friends', -2],
             ['Snacks', 90, 'Bubble tea', -5],
@@ -206,6 +235,8 @@ export const useStore = create<DemoState & DemoActions>()(
           ]
           return {
             kycStatus: 'verified' as const,
+            account: { loggedIn: true, mobile: DEMO_MOBILE, isNew: false, kycSubmitted: true },
+            guardian: initial.guardian,
             draftChildId: null,
             children: [aarav, ananya, rohan],
             requests: [],
@@ -404,7 +435,7 @@ export const useStore = create<DemoState & DemoActions>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 4,
+      version: 5,
       // Never let a corrupted or hand-edited saved state crash the app: fall back per field.
       merge: (persisted, current) => {
         const p = (persisted && typeof persisted === 'object' ? persisted : {}) as Partial<DemoState>
@@ -418,6 +449,7 @@ export const useStore = create<DemoState & DemoActions>()(
           transactions: arr(p.transactions, current.transactions),
           sips: arr(p.sips, current.sips),
           sims: p.sims && typeof p.sims === 'object' ? p.sims : current.sims,
+          account: p.account && typeof p.account === 'object' ? p.account : current.account,
         }
       },
       migrate: (persisted) => {

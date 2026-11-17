@@ -1,18 +1,29 @@
-import { Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Navigate, Outlet, useBlocker } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
-import { personas, type PersonaId } from '../../demo/personas'
+import { hasOwnPhone, personas, type PersonaId } from '../../demo/personas'
 import { useActiveChild, useActivePersona, useStore } from '../../store'
-import { WireframeLink } from '../wireframe/WireframeLink'
 
 const bandOf = { kid: '8-11', teen: '12-14', pro: '15-17' } as const
 
-/** Child routes need a child. If there isn't one, explain and offer the quick way in. */
+/**
+ * Child routes need a child. Children use a device of their own (a parent's phone, or their own), so
+ * pressing back must never land on a parent screen: history moves that leave /c/* are blocked.
+ * Own-phone children who have not logged in are sent to their invite message first.
+ */
 export function ChildGate() {
   const child = useActiveChild()
   const persona = useActivePersona()
   const children = useStore((s) => s.children)
   const setPersona = useStore((s) => s.setPersona)
   const load = useStore((s) => s.loadDemoFamily)
+
+  const blocker = useBlocker(({ historyAction, nextLocation }) => Boolean(child) && historyAction === 'POP' && !nextLocation.pathname.startsWith('/c/'))
+  useEffect(() => {
+    if (blocker.state === 'blocked') blocker.reset()
+  }, [blocker])
+
+  if (child && hasOwnPhone(child) && !child.loggedIn) return <Navigate to="/c/notify" replace />
   if (child) return <Outlet />
 
   const switchable = (Object.keys(personas) as PersonaId[]).filter(
@@ -36,7 +47,6 @@ export function ChildGate() {
           <Button onClick={load} className="w-full">Load demo family</Button>
         </>
       )}
-      {persona.view === 'parent' && <WireframeLink flow="parent">See Priya's flow</WireframeLink>}
     </main>
   )
 }

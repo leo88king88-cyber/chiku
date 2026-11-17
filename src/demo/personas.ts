@@ -11,21 +11,25 @@ export interface Persona {
   band: Band
   view: View
   home: string
+  /** Whose phone this persona is using. Aarav and Ananya borrow Priya's. */
+  device: 'priya' | 'rohan'
 }
 
 export const personas: Record<PersonaId, Persona> = {
-  priya: { id: 'priya', name: 'Priya', role: 'Parent, 38', emoji: '👩', band: 'pro', view: 'parent', home: '/p/home' },
-  aarav: { id: 'aarav', name: 'Aarav', role: 'Child, 9', emoji: '🧒', band: 'kid', view: 'child', home: '/c/home' },
-  ananya: { id: 'ananya', name: 'Ananya', role: 'Teen, 13', emoji: '👧', band: 'teen', view: 'child', home: '/c/home' },
-  rohan: { id: 'rohan', name: 'Rohan', role: 'Teen, 16', emoji: '🧑', band: 'pro', view: 'child', home: '/c/home' },
+  priya: { id: 'priya', name: 'Priya', role: 'Parent, 38', emoji: '👩', band: 'pro', view: 'parent', home: '/p/home', device: 'priya' },
+  aarav: { id: 'aarav', name: 'Aarav', role: 'Child, 9', emoji: '🧒', band: 'kid', view: 'child', home: '/c/home', device: 'priya' },
+  ananya: { id: 'ananya', name: 'Ananya', role: 'Teen, 13', emoji: '👧', band: 'teen', view: 'child', home: '/c/home', device: 'priya' },
+  rohan: { id: 'rohan', name: 'Rohan', role: 'Teen, 16', emoji: '🧑', band: 'pro', view: 'child', home: '/c/home', device: 'rohan' },
 }
 
 export const personaList = Object.values(personas)
 
-export const flowStarts = [
-  { label: '1. Parent onboarding', path: '/p/welcome', persona: 'priya' as PersonaId },
-  { label: '2a. Aarav goal', path: '/c/home', persona: 'aarav' as PersonaId },
-  { label: '2b. Ananya goal', path: '/c/home', persona: 'ananya' as PersonaId },
-  { label: '3. Rohan simulator', path: '/c/invest/sim', persona: 'rohan' as PersonaId },
-  { label: '3. Priya approvals', path: '/p/approvals', persona: 'priya' as PersonaId },
-]
+const bandOf = { '8-11': 'aarav', '12-14': 'ananya', '15-17': 'rohan' } as const
+
+/** Which persona plays a child record: matched by name, else by age band. */
+export function personaIdForChild(c: { name: string; ageBand: keyof typeof bandOf }): PersonaId {
+  return personaList.find((p) => p.view === 'child' && p.name.toLowerCase() === c.name.toLowerCase())?.id ?? bandOf[c.ageBand]
+}
+
+/** Children under 15 share a parent's phone; 15-17 have their own. */
+export const hasOwnPhone = (c: { ageBand: string }) => c.ageBand === '15-17'
