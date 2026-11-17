@@ -3,7 +3,6 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { Segmented } from '../../components/ui/Segmented'
 import { StaticFrame } from './Frame'
 import { flowSteps, stepById, type Step, type StepId } from './scenes'
-import { useWire } from './store'
 import type { FlowKey } from './types'
 
 const SCALE = 0.62
@@ -17,8 +16,6 @@ const flowMeta: Record<FlowKey, { who: string; role: string; need: string; verb:
 export function Storyboard() {
   const [sp, setSp] = useSearchParams()
   const flow: FlowKey = sp.get('flow') === 'child' ? 'child' : 'parent'
-  const fidelity = useWire((s) => s.fidelity)
-  const setFidelity = useWire((s) => s.setFidelity)
   const [chosen, setChosen] = useState<Record<string, string>>({})
   const [flash, setFlash] = useState<StepId | null>(null)
   const strip = useRef<HTMLOListElement>(null)
@@ -73,15 +70,6 @@ export function Storyboard() {
             { value: 'child', label: 'Ananya', hint: 'Child, 13' },
           ]}
         />
-        <Segmented<'wire' | 'styled'>
-          label="Fidelity"
-          value={fidelity}
-          onChange={setFidelity}
-          options={[
-            { value: 'wire', label: 'Wireframe' },
-            { value: 'styled', label: 'Styled' },
-          ]}
-        />
         </div>
       </header>
 
@@ -109,7 +97,6 @@ export function Storyboard() {
               flashing={flash === step.id}
               variantId={chosen[step.id]}
               onVariant={(v) => setChosen((c) => ({ ...c, [step.id]: v }))}
-              fidelity={fidelity}
               verb={meta.verb}
               onConnector={jumpTo}
             />
@@ -126,10 +113,10 @@ export function Storyboard() {
 }
 
 function StepItem({
-  step, last, flashing, variantId, onVariant, fidelity, verb, onConnector,
+  step, last, flashing, variantId, onVariant, verb, onConnector,
 }: {
   step: Step; last: boolean; flashing: boolean; variantId?: string; onVariant: (v: string) => void
-  fidelity: 'wire' | 'styled'; verb: string; onConnector: (id: StepId) => void
+  verb: string; onConnector: (id: StepId) => void
 }) {
   const vid = variantId ?? step.variants[0].id
   return (
@@ -140,7 +127,7 @@ function StepItem({
           <h2 className="t-title">{step.title}</h2>
         </div>
         <div className={`flex justify-center rounded-[48px] p-1 transition-shadow ${flashing ? 'ring-4 ring-saffron' : ''}`}>
-          <StaticFrame step={step} variantId={vid} scale={SCALE} fidelity={fidelity} />
+          <StaticFrame step={step} variantId={vid} scale={SCALE} />
         </div>
         {step.variants.length > 1 && (
           <div role="radiogroup" aria-label={`${step.title} states`} className="flex flex-wrap justify-center gap-1.5">

@@ -66,7 +66,6 @@ export function Play() {
         <details className="rounded-[var(--radius-btn)] bg-white px-3">
           <summary className="flex min-h-11 cursor-pointer items-center font-bold">Options and scenes</summary>
           <div className="flex flex-col gap-3 pb-3">
-            <Segmented<'wire' | 'styled'> label="Fidelity" value={w.fidelity} onChange={w.setFidelity} options={[{ value: 'wire', label: 'Wireframe' }, { value: 'styled', label: 'Styled' }]} />
             <label className="flex min-h-11 items-center justify-between gap-2"><span>Guardian KYC</span>
               <select value={w.state.kyc} onChange={(e) => w.dispatch({ type: 'SET', patch: { kyc: e.target.value as 'verified' } })} className="min-h-11 rounded-lg border border-ink/30 bg-white px-2">
                 <option value="verified">Verified</option><option value="pending">Pending</option><option value="failed">Failed</option>
@@ -83,7 +82,7 @@ export function Play() {
           </div>
         </details>
       </header>
-      <PlayFrame flow={frameFlow} fidelity={w.fidelity}>
+      <PlayFrame flow={frameFlow}>
         <Screen s={w.state} view={cursor.view} act={act} live />
       </PlayFrame>
       <p className="t-caption text-center text-ink-soft">Step {step.n}: {step.title}. Switching persona keeps your progress.</p>

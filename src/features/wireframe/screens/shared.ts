@@ -1,6 +1,6 @@
-import { createContext, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { StepId } from '../scenes'
-import type { Fidelity, WireEvent, WireState } from '../types'
+import type { WireEvent, WireState } from '../types'
 
 export type Act = { type: 'GO'; step: StepId; view?: string } | { type: 'TOAST'; message: string } | { type: 'PERSONA'; to: 'priya' | 'ananya' } | WireEvent
 
@@ -13,8 +13,6 @@ export interface ScreenProps {
   live: boolean
 }
 export type ScreenComponent = (p: ScreenProps) => ReactNode
-
-export const FidelityContext = createContext<Fidelity>('styled')
 
 export const go = (step: StepId, view?: string): Act => ({ type: 'GO', step, view })
 export const avatars = ['🦊', '🐯', '🦄', '🐼', '🚀', '⚽']

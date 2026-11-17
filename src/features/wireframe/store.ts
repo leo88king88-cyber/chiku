@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { reduce } from './machine'
 import { baseState, firstStep, sceneFor, stepById, type StepId } from './scenes'
-import type { Fidelity, FlowKey, PersonaKey, WireEvent, WireState } from './types'
+import type { FlowKey, PersonaKey, WireEvent, WireState } from './types'
 
 export interface Cursor { step: StepId; view?: string }
 
@@ -10,14 +10,12 @@ interface WireStore {
   state: WireState
   persona: PersonaKey
   cursor: Record<PersonaKey, Cursor>
-  fidelity: Fidelity
   dispatch: (e: WireEvent) => void
   go: (persona: PersonaKey, step: StepId, view?: string) => void
   switchPersona: (p: PersonaKey) => void
   jump: (stepId: StepId, variantId: string) => void
   start: (flow: FlowKey) => void
   reset: () => void
-  setFidelity: (f: Fidelity) => void
 }
 
 const personaOf = (flow: FlowKey): PersonaKey => (flow === 'parent' ? 'priya' : 'ananya')
@@ -40,7 +38,6 @@ export const useWire = create<WireStore>()(
       state: baseState(),
       persona: 'priya',
       cursor: initialCursor(),
-      fidelity: 'styled',
       dispatch: (e) => set((w) => ({ state: reduce(w.state, e) })),
       go: (persona, step, view) => set((w) => ({ cursor: { ...w.cursor, [persona]: { step, view } } })),
       switchPersona: (persona) => {
@@ -55,7 +52,6 @@ export const useWire = create<WireStore>()(
       },
       start: (flow) => set({ state: baseState(), persona: personaOf(flow), cursor: initialCursor() }),
       reset: () => set({ state: baseState(), cursor: initialCursor() }),
-      setFidelity: (fidelity) => set({ fidelity }),
     }),
     { name: 'chiku-wire-v1', version: 1 },
   ),

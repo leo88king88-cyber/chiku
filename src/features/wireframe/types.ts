@@ -2,7 +2,6 @@ import type { Jars } from '../../store/types'
 
 export type PersonaKey = 'priya' | 'ananya'
 export type FlowKey = 'parent' | 'child'
-export type Fidelity = 'styled' | 'wire'
 
 /** The goal lifecycle shown in Ananya's flow. */
 export type GoalPhase = 'active' | 'milestone' | 'completed' | 'unlockRequested' | 'unlocked' | 'declined'

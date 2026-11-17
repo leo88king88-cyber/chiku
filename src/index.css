@@ -56,31 +56,6 @@
   --gap: 20px;
 }
 
-/* Wireframe fidelity: same components, tokens flattened to grayscale low-fidelity. Must follow the band blocks. */
-[data-fidelity='wire'] {
-  --color-paper: #ffffff;
-  --color-paper-deep: #eceff1;
-  --color-ink: #222222;
-  --color-ink-soft: #555555;
-  --color-saffron: #d0d0d0;
-  --color-tomato: #b8b8b8;
-  --color-leaf: #9c9c9c;
-  --color-sky: #dcdcdc;
-  --color-plum: #7a7a7a;
-  --color-leaf-ink: #333333;
-  --color-tomato-ink: #333333;
-  --radius-card: 6px;
-  --radius-btn: 6px;
-  --bw: 1.5px;
-  --border-color: #555555;
-  --sticker-offset: 0px;
-  --font-heading: var(--font-sans);
-}
-[data-fidelity='wire'] svg,
-[data-fidelity='wire'] [aria-hidden='true'] {
-  filter: grayscale(1);
-}
-
 @layer base {
   html,
   body,

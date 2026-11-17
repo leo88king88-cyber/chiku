@@ -11,7 +11,6 @@ import { can, cant } from '../../onboarding/copy'
 import { OnboardingLayout } from '../../onboarding/OnboardingLayout'
 import { UpiSheet } from '../../onboarding/UpiSheet'
 import type { UnlockDeclineReason } from '../types'
-import { Illus } from './Illus'
 import { go, type ScreenComponent } from './shared'
 
 const TOTAL = 5
@@ -26,7 +25,7 @@ export const PWelcome: ScreenComponent = ({ act }) => (
       </>
     }
   >
-    <div className="flex flex-col items-center pt-2"><Illus label="Chiku" className="size-32"><Chiku size={132} /></Illus></div>
+    <div className="flex flex-col items-center pt-2"><Chiku size={132} /></div>
     <h1 className="t-display text-center">Money skills for your child. You're in charge.</h1>
     <ul className="flex flex-col gap-3">
       {[
@@ -151,7 +150,7 @@ export const PPocket: ScreenComponent = ({ s, view, act }) => (
 export const PInvite: ScreenComponent = ({ s, act }) => (
   <div className="flex min-h-full flex-col">
     <main className="flex flex-1 flex-col items-center gap-[var(--gap)] px-5 pt-10 text-center">
-      <Illus label="Chiku cheering" className="size-28"><Chiku size={110} cheer /></Illus>
+      <Chiku size={110} cheer />
       <h1 className="t-display">Ananya is all set!</h1>
       <ul className="w-full text-left">
         <li className="t-body flex gap-2 py-1"><span aria-hidden>✓</span>{s.pocket.autopay ? `${formatINR(s.pocket.amount)} pocket money on the ${ordinal(s.pocket.day)} via UPI AutoPay` : 'Pocket money not set up yet. Add it anytime from your dashboard.'}</li>

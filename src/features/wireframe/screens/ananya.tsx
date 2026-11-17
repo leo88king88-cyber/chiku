@@ -11,7 +11,6 @@ import { formatINR } from '../../../lib/money'
 import { findTemplate, goalTemplates } from '../../goals/templates'
 import { splitAmount } from '../machine'
 import type { UnlockDeclineReason, WireState } from '../types'
-import { Illus } from './Illus'
 import { avatars, go, type ScreenComponent } from './shared'
 
 const jarMeta = [
@@ -26,7 +25,7 @@ function GoalRing({ s, size = 96 }: { s: WireState; size?: number }) {
   const g = s.goal!
   return (
     <ProgressRing value={s.askedParentForPrice ? 0 : pctOf(s)} size={size} stroke={9}>
-      <Illus label="goal" className="size-12"><span className="text-4xl" aria-hidden>{g.emoji}</span></Illus>
+      <span className="text-4xl" aria-hidden>{g.emoji}</span>
     </ProgressRing>
   )
 }
@@ -34,7 +33,7 @@ function GoalRing({ s, size = 96 }: { s: WireState; size?: number }) {
 export const AJoin: ScreenComponent = ({ s, act }) => (
   <div className="flex min-h-full flex-col">
     <main className="flex flex-1 flex-col items-center gap-[var(--gap)] px-5 pt-10 text-center">
-      <Illus label="Chiku" className="size-28"><Chiku size={112} cheer /></Illus>
+      <Chiku size={112} cheer />
       <h1 className="t-display">Hi Ananya! I'm Chiku.</h1>
       <p className="t-body">Pick your buddy. You can change it later.</p>
       <div role="radiogroup" aria-label="Avatar" className="grid w-full grid-cols-3 gap-3">
@@ -107,7 +106,7 @@ export const APick: ScreenComponent = ({ act }) => {
           {choices.slice(0, 5).map((t) => (
             <li key={t.id}>
               <button onClick={() => act(go('a-amount', t.id))} className="sticker flex min-h-28 w-full flex-col items-center gap-1 p-3">
-                <Illus label={t.title} className="h-10 w-16"><span className="text-4xl" aria-hidden>{t.emoji}</span></Illus>
+                <span className="text-4xl" aria-hidden>{t.emoji}</span>
                 <span className="font-bold">{t.title}</span><span className="t-caption t-money text-ink-soft">{formatINR(t.price)}</span>
               </button>
             </li>
@@ -130,7 +129,7 @@ export const AAmount: ScreenComponent = ({ view, act }) => {
     <div className="flex min-h-full flex-col">
       <header className="flex items-center px-3 pt-3"><button aria-label="Back" onClick={() => act(go('a-pick'))} className="grid size-11 place-items-center rounded-full text-2xl">←</button></header>
       <main className="flex flex-1 flex-col items-center gap-[var(--gap)] px-5 text-center">
-        <Illus label={t.title} className="size-24"><span className="text-7xl" aria-hidden>{t.emoji}</span></Illus>
+        <span className="text-7xl" aria-hidden>{t.emoji}</span>
         <h1 className="t-display">{t.title}</h1>
         <div className="flex items-center gap-3">
           <button aria-label="Less 50 rupees" onClick={() => setAmount((a) => Math.max(50, a - 50))} className="sticker grid size-14 place-items-center text-3xl">−</button>
@@ -185,7 +184,7 @@ export const AComplete: ScreenComponent = ({ s, view, act }) => {
   return (
     <div className="relative flex min-h-full flex-col">
       <main className="flex flex-1 flex-col items-center gap-[var(--gap)] px-5 pt-16 text-center">
-        <Illus label="goal" className="size-28"><span className="text-[96px]" aria-hidden>{g.emoji}</span></Illus>
+        <span className="text-[96px]" aria-hidden>{g.emoji}</span>
         <h1 className="t-display">You did it, Ananya!</h1>
         <p className="t-body">You saved {formatINR(g.target)} for the {g.title.toLowerCase()}.</p>
       </main>
@@ -238,7 +237,7 @@ export const AOutcome: ScreenComponent = ({ s, act }) => {
   return (
     <div className="flex min-h-full flex-col">
       <main className="flex flex-1 flex-col items-center gap-[var(--gap)] px-5 pt-16 text-center">
-        <Illus label="goal" className="size-28"><span className="text-[96px]" aria-hidden>{g.emoji}</span></Illus>
+        <span className="text-[96px]" aria-hidden>{g.emoji}</span>
         <h1 className="t-display">{declined ? 'Priya said not yet' : 'Approved! 🎉'}</h1>
         {declined ? (
           <section className="sticker w-full p-4 text-left">
