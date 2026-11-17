@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import type { ReactNode } from 'react'
+import { useStaticMode } from './staticMode'
 
 /** Circular progress. Animates `pathLength` (a transform-free SVG attribute, GPU friendly). */
 export function ProgressRing({
@@ -15,6 +16,7 @@ export function ProgressRing({
   color?: string
   children?: ReactNode
 }) {
+  const still = useStaticMode()
   const r = (size - stroke) / 2
   const pct = Math.round(Math.min(1, Math.max(0, value)) * 100)
   return (
@@ -37,9 +39,9 @@ export function ProgressRing({
           stroke={color}
           strokeWidth={stroke}
           strokeLinecap="round"
-          initial={{ pathLength: 0 }}
+          initial={still ? false : { pathLength: 0 }}
           animate={{ pathLength: Math.min(1, Math.max(0.001, value)) }}
-          transition={{ duration: 1, ease: 'easeOut' }}
+          transition={{ duration: still ? 0 : 1, ease: 'easeOut' }}
         />
       </svg>
       <div className="relative">{children}</div>

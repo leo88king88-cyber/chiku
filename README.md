@@ -32,6 +32,15 @@ Node 20+ recommended. Stack: Vite, React 19, TypeScript, Tailwind v4, React Rout
 
 Import the repo in Vercel. Framework preset Vite is detected (build `npm run build`, output `dist`). `vercel.json` contains the SPA rewrite so deep links and refreshes work (for example `/c/invest/quiz`), and long-cache headers for hashed assets.
 
+## UX flows: `/c/wireframe`
+
+A design-flow page for the two core journeys, **Priya** (parent, onboarding through approving a request) and **Ananya** (child, goal through unlock).
+
+- **Storyboard:** a swipeable strip of screens per flow, with step numbers, arrows and notes under each (what the user does, the design decision and why, states handled). State chips under a frame switch it between its states (for example KYC verified, pending, failed). A connector marks where Ananya's "ask to unlock" appears in Priya's approvals, and either end jumps to the other.
+- **Wireframe / Styled:** the same components with tokens flattened to grayscale and illustrations swapped for labelled boxes.
+- **Play:** opens the same screens as a clickable prototype. Switch between Priya and Ananya at any time; state is shared and persists, and the switcher lands on the open request. "Options and scenes" has scenario switches and a jump-to-scene menu that seeds any step.
+- **Architecture:** one view per step (`features/wireframe/screens`), used by both the static frames and Play. A typed state machine (`machine.ts`: active → milestone → completed → unlockRequested → unlocked or declined), its own persisted store, and seeded scenes (`scenes.ts`). The live demo's data is never touched.
+
 ## The demo toolbar
 
 On desktop the app sits in a phone frame with the toolbar beside it. On a phone the toolbar is behind the "Demo" pill at the top right.

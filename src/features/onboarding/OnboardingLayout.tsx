@@ -8,12 +8,15 @@ export function OnboardingLayout({
   children,
   footer,
   backTo,
+  onBack,
 }: {
   step?: number
   total?: number
   children: ReactNode
   footer: ReactNode
   backTo?: string
+  /** Overrides router navigation (used by the wireframe's play mode). */
+  onBack?: () => void
 }) {
   const navigate = useNavigate()
   const main = useRef<HTMLElement>(null)
@@ -26,7 +29,7 @@ export function OnboardingLayout({
       <header className="flex items-center gap-3 px-3 pt-3">
         <button
           aria-label="Back"
-          onClick={() => (backTo ? navigate(backTo) : navigate(-1))}
+          onClick={() => (onBack ? onBack() : backTo ? navigate(backTo) : navigate(-1))}
           className="grid size-11 place-items-center rounded-full text-2xl"
         >
           ←

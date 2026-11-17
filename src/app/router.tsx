@@ -3,6 +3,7 @@ import { createBrowserRouter, type RouteObject } from 'react-router-dom'
 import { ChildGate } from '../features/goals/ChildGate'
 import { NotFound } from '../features/shell/NotFound'
 import { AppShell } from './AppShell'
+import { WireframeShell } from '../features/wireframe/WireframeShell'
 import { ErrorScreen } from './ErrorScreen'
 import { RootRedirect } from './RootRedirect'
 
@@ -36,7 +37,19 @@ const SipStatus = screen(() => import('../features/invest/SipStatus'), 'SipStatu
 const SipConfirmed = screen(() => import('../features/invest/SipConfirmed'), 'SipConfirmed')
 const Graduation = screen(() => import('../features/invest/Graduation'), 'Graduation')
 
+const Storyboard = screen(() => import('../features/wireframe/Storyboard'), 'Storyboard')
+const Play = screen(() => import('../features/wireframe/Play'), 'Play')
+
 const routes: RouteObject[] = [
+  {
+    // The design-flow page is wide and scrollable, so it lives outside the phone frame.
+    element: <WireframeShell />,
+    errorElement: <ErrorScreen />,
+    children: [
+      { path: '/c/wireframe', element: <Storyboard /> },
+      { path: '/c/wireframe/play/:flow', element: <Play /> },
+    ],
+  },
   {
     element: <AppShell />,
     errorElement: <ErrorScreen />,

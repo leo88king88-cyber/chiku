@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useStaticMode } from './staticMode'
 
 export interface Series {
   name: string
@@ -11,6 +12,7 @@ const W = 300
 
 /** Minimal SVG line chart. The draw-on animation is a single pathLength tween per line. */
 export function LineChart({ series, height = 140, label }: { series: Series[]; height?: number; label: string }) {
+  const still = useStaticMode()
   const all = series.flatMap((s) => s.points)
   const min = Math.min(...all)
   const max = Math.max(...all)
@@ -39,7 +41,7 @@ export function LineChart({ series, height = 140, label }: { series: Series[]; h
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeDasharray={s.dashed ? '1 6' : undefined}
-              initial={{ pathLength: 0 }}
+              initial={still ? false : { pathLength: 0 }}
               animate={{ pathLength: 1 }}
               transition={{ duration: 0.9, ease: 'easeOut' }}
             />

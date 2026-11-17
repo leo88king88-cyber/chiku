@@ -52,6 +52,13 @@ export function DemoToolbar() {
           </div>
         </Section>
 
+        <Section title="Design flows">
+          <div className="grid grid-cols-2 gap-2">
+            <button onClick={() => { navigate('/c/wireframe?flow=parent'); setOpen(false) }} className="min-h-11 rounded-xl bg-white/10 px-2 text-left">Priya's flow →</button>
+            <button onClick={() => { navigate('/c/wireframe?flow=child'); setOpen(false) }} className="min-h-11 rounded-xl bg-white/10 px-2 text-left">Ananya's flow →</button>
+          </div>
+        </Section>
+
         <Section title="Jump to flow">
           <div className="flex flex-col gap-2">
             {flowStarts.map((f) => (

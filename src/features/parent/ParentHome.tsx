@@ -3,6 +3,7 @@ import { Button } from '../../components/ui/Button'
 import { formatINR } from '../../lib/money'
 import { nextOccurrence, ordinal } from '../../lib/dates'
 import { fundById } from '../invest/funds'
+import { WireframeLink } from '../wireframe/WireframeLink'
 import { useStore } from '../../store'
 import { useToast } from '../../store/toast'
 import { ageBandInfo } from '../../store/presets'
@@ -79,6 +80,7 @@ export function ParentHome() {
       </section>
 
       <Button onClick={() => navigate('/p/add-child?second=1')} variant="secondary" className="w-full">+ Add another child</Button>
+      <WireframeLink flow="parent">See Priya's flow</WireframeLink>
     </main>
   )
 }

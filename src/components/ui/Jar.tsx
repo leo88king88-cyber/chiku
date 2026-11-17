@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion'
 import { useId } from 'react'
 import { formatINR } from '../../lib/money'
+import { useStaticMode } from './staticMode'
 
 const colors = { spend: 'var(--color-tomato)', save: 'var(--color-leaf)', share: 'var(--color-sky)' } as const
 export type JarKind = keyof typeof colors
 
 /** Glass jar whose liquid rises with `fill` (0..1). Only a translateY animates. */
 export function Jar({ kind, label, amount, fill, size = 88 }: { kind: JarKind; label: string; amount: number; fill: number; size?: number }) {
+  const still = useStaticMode()
   const clip = 'jar' + useId().replace(/[^a-zA-Z0-9]/g, '')
   const level = Math.min(1, Math.max(0.04, fill))
   return (
@@ -21,9 +23,9 @@ export function Jar({ kind, label, amount, fill, size = 88 }: { kind: JarKind; l
           <rect x="12" y="30" width="76" height="84" fill="white" />
           <motion.rect
             x="8" y="30" width="84" height="90" fill={colors[kind]} opacity="0.9"
-            initial={{ y: 84 }}
+            initial={still ? false : { y: 84 }}
             animate={{ y: 84 * (1 - level) }}
-            transition={{ type: 'spring', stiffness: 60, damping: 14 }}
+            transition={still ? { duration: 0 } : { type: 'spring', stiffness: 60, damping: 14 }}
           />
         </g>
         <rect x="12" y="30" width="76" height="84" rx="20" fill="none" stroke="var(--color-ink)" strokeWidth="4" />

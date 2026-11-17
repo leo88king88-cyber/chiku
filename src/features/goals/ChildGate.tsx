@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { personas, type PersonaId } from '../../demo/personas'
 import { useActiveChild, useActivePersona, useStore } from '../../store'
+import { WireframeLink } from '../wireframe/WireframeLink'
 
 const bandOf = { kid: '8-11', teen: '12-14', pro: '15-17' } as const
 
@@ -35,6 +36,7 @@ export function ChildGate() {
           <Button onClick={load} className="w-full">Load demo family</Button>
         </>
       )}
+      {persona.view === 'parent' && <WireframeLink flow="parent">See Priya's flow</WireframeLink>}
     </main>
   )
 }
