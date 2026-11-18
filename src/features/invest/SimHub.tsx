@@ -6,9 +6,11 @@ import { DisclosureBanner } from '../../components/ui/DisclosureBanner'
 import { ChartLegend, LineChart } from '../../components/ui/LineChart'
 import { RiskBadge } from '../../components/ui/RiskBadge'
 import { formatINR, signed, signedINR } from '../../lib/money'
-import { useActiveChild, useStore } from '../../store'
+import { EMPTY_LEARNED, useActiveChild, useStore } from '../../store'
 import { funds } from './funds'
 import { InvestHeader } from './InvestHeader'
+import { LearnTabs } from './learn/LearnTabs'
+import { lessons } from './learn/lessons'
 import { useSim } from './useSim'
 
 export function SimHub() {
@@ -21,6 +23,8 @@ function Hub({ childId, childName }: { childId: string; childName: string }) {
   const navigate = useNavigate()
   const { sim, stats, history, holdings, recap } = useSim(childId)
   const advance = useStore((s) => s.simAdvance)
+  const learned = useStore((s) => s.learned[childId]) ?? EMPTY_LEARNED
+  const nextLesson = lessons.find((l) => !learned.includes(l.id))
   const parent = useStore((s) => s.guardian.name.split(' ')[0])
   const sipReq = useStore((s) => s.requests.filter((r) => r.kind === 'sip' && r.childId === childId).at(-1))
   const hasInvested = sim.trades.length > 0
@@ -28,8 +32,9 @@ function Hub({ childId, childName }: { childId: string; childName: string }) {
 
   return (
     <div className="flex min-h-full flex-col">
-      <InvestHeader title="Practice investing" tag="Virtual money" />
+      <InvestHeader title="Investing" tag="Virtual money" />
       <main className="flex flex-col gap-[var(--gap)] px-5 pb-8 pt-3">
+        <LearnTabs value="practice" />
         <section aria-label="Portfolio" className="sticker p-4">
           <p className="t-caption text-ink-soft">{childName}'s practice portfolio · week {sim.week}</p>
           <p className="t-display"><AnimatedNumber value={Math.round(stats.value)} /></p>
@@ -57,6 +62,15 @@ function Hub({ childId, childName }: { childId: string; childName: string }) {
             {hasInvested && <Button variant="secondary" className="flex-1" onClick={() => navigate('/c/invest/compare')}>Compare</Button>}
           </div>
         </section>
+
+        <Link to={nextLesson ? `/c/invest/learn/${nextLesson.id}` : '/c/invest/learn'} className="sticker flex min-h-16 items-center gap-3 !bg-leaf/15 p-3 no-underline">
+          <span aria-hidden className="text-3xl">📚</span>
+          <span className="flex-1">
+            <span className="block font-bold">Learn the basics · {learned.length} of {lessons.length} done</span>
+            <span className="t-caption block text-ink-soft">{nextLesson ? `Up next: ${nextLesson.title}` : 'All lessons done. Revisit any time.'}</span>
+          </span>
+          <span aria-hidden>→</span>
+        </Link>
 
         {recap && recap.invested && (
           <motion.section key={recap.week} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} aria-label="Weekly recap" className="sticker p-4">

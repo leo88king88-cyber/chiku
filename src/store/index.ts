@@ -23,6 +23,8 @@ interface DemoState {
   transactions: Txn[]
   sims: Record<string, Sim>
   sips: Sip[]
+  /** Lesson ids each child has finished (Learn tab). */
+  learned: Record<string, string[]>
   /** Child currently being set up in the onboarding flow. */
   draftChildId: string | null
 }
@@ -60,6 +62,7 @@ interface DemoActions {
   decideSip: (id: string, d: { approve: true } | { approve: false; reasons: DeclineReason[]; note?: string; suggestedAmount?: number }) => void
   markSipSeen: (id: string) => void
   markGoalSeen: (id: string) => void
+  markLearned: (childId: string, lessonId: string) => void
 }
 
 const guardian: Guardian = {
@@ -84,6 +87,7 @@ const initial: DemoState = {
   transactions: [],
   sims: {},
   sips: [],
+  learned: {},
   draftChildId: null,
 }
 
@@ -163,6 +167,7 @@ export const SIM_START_WEEK = 12
 export const defaultSim = (): Sim => ({ week: SIM_START_WEEK, cash: SIM_CASH, trades: [] })
 /** Stable fallback for selectors (a fresh object each render would loop). */
 export const EMPTY_SIM: Sim = defaultSim()
+export const EMPTY_LEARNED: string[] = []
 
 export const STORAGE_KEY = 'chiku-demo-v1'
 
@@ -421,6 +426,11 @@ export const useStore = create<DemoState & DemoActions>()(
         }
       },
       markGoalSeen: (id) => set((s) => ({ goals: s.goals.map((g) => (g.id === id ? { ...g, seen: true } : g)) })),
+      markLearned: (childId, lessonId) =>
+        set((s) => {
+          const done = s.learned[childId] ?? []
+          return done.includes(lessonId) ? {} : { learned: { ...s.learned, [childId]: [...done, lessonId] } }
+        }),
       markSipSeen: (id) =>
         set((s) => ({ requests: s.requests.map((r) => (r.id === id && r.kind === 'sip' ? { ...r, seen: true } : r)) })),
 
@@ -450,6 +460,7 @@ export const useStore = create<DemoState & DemoActions>()(
           sips: arr(p.sips, current.sips),
           sims: p.sims && typeof p.sims === 'object' ? p.sims : current.sims,
           account: p.account && typeof p.account === 'object' ? p.account : current.account,
+          learned: p.learned && typeof p.learned === 'object' ? p.learned : current.learned,
         }
       },
       migrate: (persisted) => {

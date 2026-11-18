@@ -12,7 +12,7 @@ Sikka by Upmoney is a **separate app** from the existing investing app, Upmoney 
 |---|---|---|
 | 1. Parent onboarding and linking | Priya (parent) | A push notification on her lock screen (first screen), the Upmoney app with a Sikka banner, welcome, "what your child can and can never do", login with the Upmoney login (existing user, or new user with sign-up and a KYC form), add child (mobile number for 15+), guardian KYC (verified from the existing account, or pending/failed), age-based control presets (or skip for safe defaults), monthly pocket money via mock UPI AutoPay, success with a child invite, second-child shortcut |
 | 2. Savings goal | Aarav (9), Ananya (13), on Priya's phone | Spend/save/share jars, picture-grid goal creation (or "ask a parent to fill in"), pocket money arriving and filling the jar, milestone and goal-complete celebrations, parent purchase approval, "pick your next goal". Extra-money requests with a reason, and "ask again tomorrow" |
-| 3. Simulated to real investing | Rohan (16), on his own phone | A message from his parent on his lock screen, his own login (mobile + OTP), practice with virtual ₹1,00,000, fund pages, weekly recap, honest comparison against an index fund, risk quiz, real SIP request with simulator history attached, parent approval (UPI AutoPay) or structured decline (too risky / wait / smaller amount), resubmit, SIP confirmation, graduation-at-18 teaser |
+| 3. Simulated to real investing | Rohan (16), on his own phone | A message from his parent on his lock screen, his own login (mobile + OTP), practice with virtual ₹1,00,000 next to a **Learn** tab of 7 short lessons (what a mutual fund is, NAV and units, SIPs, index vs active funds, risk and the riskometer, costs, time and compounding), each with a diagram and a one-question check, fund pages, weekly recap, honest comparison against an index fund, risk quiz, real SIP request with simulator history attached, parent approval (UPI AutoPay) or structured decline (too risky / wait / smaller amount), resubmit, SIP confirmation, graduation-at-18 teaser |
 
 ### Phones and logins
 
@@ -80,10 +80,11 @@ Setup: open the app and toolbar → **Reset demo data**. The first screen is Pri
 
 **Part 3: Rohan on his own phone (about 1:30)**
 14. Toolbar persona **Rohan** (his own phone, label above the phone changes): lock screen with a message from Priya → tap it → his number is prefilled → **Send OTP** → any 6 digits → pick a buddy → **Let's go!**
-15. **Practice portfolio** (chart, weekly recap) → **Fast-forward 1 week** → **Compare** → **I'm ready for a real SIP**.
-16. Quiz: **Invest a bit more**, **3 years or more**, **Growing it**, **True** → **Continue** → keep the index fund, **₹500** → **Send to Priya**.
-17. Toolbar persona **Priya** (lands on Approvals with his history) → **Decline…** → **Too risky** + **Smaller amount** → **Send decision**.
-18. Toolbar persona **Rohan** (sees the reasons) → **Change and resubmit** → **Send to Priya**. Persona **Priya** → **Approve SIP** → **PhonePe** → **Approve** → PIN. Persona **Rohan** → "Your first real SIP is on!" → **What happens when I turn 18?**
+15. **Practice portfolio** (chart, weekly recap) → **Fast-forward 1 week** → **Compare**.
+16. Back on the investing page tap the **Learn** tab (or the green "Learn the basics" card) → **What is a mutual fund?** → read the diagram → answer **The fund manager at the AMC** → **Next** for NAV and units. Return with **Practice**.
+17. **I'm ready for a real SIP** → quiz: **Invest a bit more**, **3 years or more**, **Growing it**, **True** → **Continue** → keep the index fund, **₹500** → **Send to Priya**.
+18. Toolbar persona **Priya** (lands on Approvals with his history) → **Decline…** → **Too risky** + **Smaller amount** → **Send decision**.
+19. Toolbar persona **Rohan** (sees the reasons) → **Change and resubmit** → **Send to Priya**. Persona **Priya** → **Approve SIP** → **PhonePe** → **Approve** → PIN. Persona **Rohan** → "Your first real SIP is on!" → **What happens when I turn 18?**
 
 ## Project structure
 
@@ -94,7 +95,7 @@ src/
   store/        Zustand store (persisted), types, presets, celebration queue
   theme/        age bands (kid / teen / pro) mapped to CSS variables in index.css
   components/   ui/ (Button, Sheet, Jar, ProgressRing, LineChart…), mascot/
-  features/     auth/ (mobile + OTP)  onboarding/  goals/  invest/  parent/  shell/  wireframe/
+  features/     auth/ (mobile + OTP)  onboarding/  goals/  invest/ (incl. learn/ lessons)  parent/  shell/  wireframe/
   lib/          money (₹ grouping), dates
 ```
 

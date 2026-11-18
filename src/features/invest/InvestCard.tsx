@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import { formatINR } from '../../lib/money'
-import { useStore } from '../../store'
+import { EMPTY_LEARNED, useStore } from '../../store'
 import { fundById } from './funds'
+import { lessons } from './learn/lessons'
 import { signed, signedINR } from '../../lib/money'
 import { useSim } from './useSim'
 
@@ -12,6 +13,7 @@ export function InvestCard({ childId }: { childId: string }) {
   const req = useStore((s) => s.requests.filter((r) => r.kind === 'sip' && r.childId === childId).at(-1))
   const sip = sips.find((s) => s.childId === childId)
   const parent = useStore((s) => s.guardian.name.split(' ')[0])
+  const learned = useStore((s) => s.learned[childId]) ?? EMPTY_LEARNED
   const pending = req?.status === 'pending'
   const declined = req?.status === 'declined'
   const status = sip
@@ -33,6 +35,10 @@ export function InvestCard({ childId }: { childId: string }) {
           <b className="t-money">{formatINR(Math.round(stats.value))}</b>
           {sim.trades.length > 0 && <span className={`t-caption block ${stats.gain >= 0 ? 'text-leaf-ink' : 'text-tomato-ink'}`}>{signedINR(stats.gain)} ({signed(stats.returnPct)})</span>}
         </span>
+      </Link>
+      <Link to="/c/invest/learn" className="flex min-h-11 items-center justify-between no-underline">
+        <span><b>Learn the basics</b><span className="t-caption block text-ink-soft">What a mutual fund is, SIPs, risk</span></span>
+        <span className="t-money font-bold">{learned.length} of {lessons.length}</span>
       </Link>
       {status && (
         <Link to={sip ? '/c/invest/sip-confirmed' : '/c/invest/status'} className="t-body flex min-h-11 items-center rounded-xl bg-paper-deep px-3 no-underline">{status}</Link>

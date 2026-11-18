@@ -34,6 +34,8 @@ const GoalDone = screen(() => import('../features/goals/GoalDone'), 'GoalDone')
 const RequestMoney = screen(() => import('../features/goals/RequestMoney'), 'RequestMoney')
 const Insights = screen(() => import('../features/goals/Insights'), 'Insights')
 const SimHub = screen(() => import('../features/invest/SimHub'), 'SimHub')
+const LearnHome = screen(() => import('../features/invest/learn/LearnHome'), 'LearnHome')
+const LessonPage = screen(() => import('../features/invest/learn/LessonPage'), 'LessonPage')
 const FundDetail = screen(() => import('../features/invest/FundDetail'), 'FundDetail')
 const Compare = screen(() => import('../features/invest/Compare'), 'Compare')
 const Quiz = screen(() => import('../features/invest/Quiz'), 'Quiz')
@@ -90,6 +92,8 @@ const routes: RouteObject[] = [
           { path: '/c/request-money', element: <RequestMoney /> },
           { path: '/c/insights', element: <Insights /> },
           { path: '/c/invest/sim', element: <SimHub /> },
+          { path: '/c/invest/learn', element: <LearnHome /> },
+          { path: '/c/invest/learn/:id', element: <LessonPage /> },
           { path: '/c/invest/fund/:id', element: <FundDetail /> },
           { path: '/c/invest/compare', element: <Compare /> },
           { path: '/c/invest/quiz', element: <Quiz /> },
