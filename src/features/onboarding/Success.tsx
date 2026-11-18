@@ -62,7 +62,7 @@ export function Success() {
           <h2 className="t-title">Invite {child.name}</h2>
           <p className="t-caption mt-1 text-ink-soft">{ownPhone ? `We'll message this to ${child.name}'s own phone${child.phone ? ` (+91 ${child.phone.slice(0, 5)} ${child.phone.slice(5)})` : ''}. ${child.name} logs in there.` : `${child.name} uses your phone. Hand it over and ${child.name} picks an avatar.`}</p>
           <p className="t-money my-3 rounded-xl bg-paper-deep py-3 text-xl font-bold tracking-wider">{child.inviteCode}</p>
-          <Button onClick={share} className="w-full">Share on WhatsApp</Button>
+          {ownPhone && <Button onClick={share} className="w-full">Share on WhatsApp</Button>}
         </section>
       </main>
       <footer className="flex flex-col gap-2 px-5 pb-5 pt-4">
