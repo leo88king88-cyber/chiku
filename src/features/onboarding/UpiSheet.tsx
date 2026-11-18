@@ -24,7 +24,7 @@ export function UpiSheet({
   amount,
   day,
   childName,
-  payee = 'Chiku Kids · pocket money',
+  payee = 'Sikka by Upmoney · pocket money',
   note,
 }: {
   open: boolean

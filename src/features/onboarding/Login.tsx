@@ -34,7 +34,7 @@ export function Login() {
       {phase === 'mobile' && (
         <>
           <h1 className="t-display">Use your {PARENT_APP} login</h1>
-          <p className="t-body text-ink-soft">Chiku is a separate app with the same login and KYC as {PARENT_APP}. New to {PARENT_APP}? We'll set you up.</p>
+          <p className="t-body text-ink-soft">Sikka is a separate app with the same login and KYC as {PARENT_APP}. New to {PARENT_APP}? We'll set you up.</p>
           <MobileStep value={mobile} onChange={setMobile} onSubmit={() => setPhase('otp')}>
             <p role="note" className="t-caption rounded-xl bg-paper-deep px-3 py-2 text-ink-soft">
               {existing ? `Demo: this number already has an account with ${PARENT_APP}, so your KYC is reused.` : `Demo: a new number. You'll create an account and complete KYC.`}

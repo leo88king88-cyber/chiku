@@ -14,7 +14,7 @@ export function ChildNotify() {
       app="Messages"
       icon="💬"
       title={parent}
-      body={`${child.name}, I've set you up on Chiku. Tap to join. You can practise with pretend money first.`}
+      body={`${child.name}, I've set you up on Sikka. Tap to join. You can practise with pretend money first.`}
       hint="Tap the message"
       onOpen={() => navigate(`/join/${child.inviteCode}`)}
     />

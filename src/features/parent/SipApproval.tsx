@@ -76,7 +76,7 @@ export function SipApproval({ req }: { req: Sip & SipRequestBody }) {
         amount={req.amount}
         day={req.dayOfMonth}
         childName={child.name}
-        payee={`Chiku Kids · SIP in ${fund.name}`}
+        payee={`Sikka by Upmoney · SIP in ${fund.name}`}
         note={`This SIP invests in ${fund.name} for ${child.name}.`}
         onSuccess={() => {
           decide(req.id, { approve: true })

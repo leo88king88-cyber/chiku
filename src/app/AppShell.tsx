@@ -12,7 +12,7 @@ export function AppShell() {
   const owner = personas[useStore((s) => s.activePersona)].device
   return (
     <div className="flex min-h-dvh items-center justify-center gap-6 pt-14 sm:p-4">
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex w-full min-w-0 flex-col items-center gap-2 sm:w-auto">
         <p className="t-caption hidden rounded-full bg-ink/10 px-3 py-1 font-bold sm:block">📱 {owner === 'rohan' ? "Rohan's" : "Priya's"} phone</p>
       <PhoneFrame>
         {/* Keyed on path so each screen fades in; opacity only, so it never reflows. */}

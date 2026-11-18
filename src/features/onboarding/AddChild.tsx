@@ -84,7 +84,7 @@ export function AddChild() {
             <span className="font-bold text-ink-soft">+91</span>
             <input value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))} inputMode="numeric" autoComplete="off" aria-label="Child's mobile number" placeholder="98123 45678" className="min-h-12 flex-1 bg-transparent text-[18px] outline-none" />
           </span>
-          <span className="t-caption text-ink-soft">At 15 and over, they use Chiku on their own phone and log in with this number. We send the invite there.</span>
+          <span className="t-caption text-ink-soft">At 15 and over, they use Sikka on their own phone and log in with this number. We send the invite there.</span>
         </label>
       )}
     </OnboardingLayout>

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { Chiku } from '../../components/mascot/Chiku'
+import { CHILD_APP_FULL } from '../../lib/brand'
 import { useStore } from '../../store'
 import { OnboardingLayout } from './OnboardingLayout'
 
@@ -14,7 +15,7 @@ export function Welcome() {
   const navigate = useNavigate()
   return (
     <OnboardingLayout
-      backTo="/p/notify"
+      backTo="/p/upmoney"
       footer={
         <>
           <Button
@@ -33,6 +34,7 @@ export function Welcome() {
       <div className="flex flex-col items-center pt-2">
         <Chiku size={132} />
       </div>
+      <p className="t-caption text-center font-bold uppercase tracking-wide text-ink-soft">{CHILD_APP_FULL}</p>
       <h1 className="t-display text-center">Money skills for your child. You're in charge.</h1>
       <ul className="flex flex-col gap-3">
         {points.map(([icon, title, body]) => (

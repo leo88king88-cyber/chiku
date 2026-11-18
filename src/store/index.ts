@@ -102,7 +102,7 @@ function makeChild(name: string, ageBand: AgeBand, confirmed = false, phone?: st
     ageBand,
     controls: { ...controlPresets[ageBand], isDefault: !confirmed },
     pocketMoney: null,
-    inviteCode: `CHIKU-${n.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 6)}-${Math.floor(1000 + Math.random() * 9000)}`,
+    inviteCode: `SIKKA-${n.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 6)}-${Math.floor(1000 + Math.random() * 9000)}`,
     inviteStatus: 'sent',
     ...(phone ? { phone, loggedIn: false } : {}),
     jars: { spend: 0, save: 0, share: 0 },

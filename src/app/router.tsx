@@ -15,6 +15,7 @@ const screen = <T extends Record<string, React.ComponentType<never>>>(load: () =
 const Notify = screen(() => import('../features/onboarding/Notify'), 'Notify')
 const Login = screen(() => import('../features/onboarding/Login'), 'Login')
 const ChildNotify = screen(() => import('../features/goals/ChildNotify'), 'ChildNotify')
+const Upmoney = screen(() => import('../features/onboarding/Upmoney'), 'Upmoney')
 const Welcome = screen(() => import('../features/onboarding/Welcome'), 'Welcome')
 const CanAndCant = screen(() => import('../features/onboarding/CanAndCant'), 'CanAndCant')
 const AddChild = screen(() => import('../features/onboarding/AddChild'), 'AddChild')
@@ -61,6 +62,7 @@ const routes: RouteObject[] = [
       { path: '/', element: <RootRedirect /> },
       { path: '/join/:code', element: <Join /> },
       { path: '/p/notify', element: <Notify /> },
+      { path: '/p/upmoney', element: <Upmoney /> },
       { path: '/p/welcome', element: <Welcome /> },
       { path: '/p/can-and-cant', element: <CanAndCant /> },
       { path: '/p/login', element: <Login /> },

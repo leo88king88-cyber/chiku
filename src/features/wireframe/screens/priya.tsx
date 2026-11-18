@@ -159,7 +159,7 @@ export const PInvite: ScreenComponent = ({ s, act }) => (
       <section className="sticker w-full p-4">
         <h2 className="t-title">Invite Ananya</h2>
         <p className="t-caption mt-1 text-ink-soft">Send this code. Ananya picks an avatar and is in.</p>
-        <p className="t-money my-3 rounded-xl bg-paper-deep py-3 text-xl font-bold tracking-wider">CHIKU-ANANYA-4821</p>
+        <p className="t-money my-3 rounded-xl bg-paper-deep py-3 text-xl font-bold tracking-wider">SIKKA-ANANYA-4821</p>
         <Button className="w-full" onClick={() => act({ type: 'TOAST', message: 'Invite copied. Paste it in WhatsApp.' })}>Share on WhatsApp</Button>
       </section>
     </main>

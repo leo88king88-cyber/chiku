@@ -51,7 +51,7 @@ export function Join() {
         <Chiku size={step === 'avatar' ? 120 : 90} cheer />
         {step === 'mobile' && (
           <div className="flex w-full flex-col gap-[var(--gap)] text-left">
-            <h1 className="t-display text-center">Hi {child.name}! Log in to Chiku</h1>
+            <h1 className="t-display text-center">Hi {child.name}! Log in to Sikka</h1>
             <p className="t-body text-center text-ink-soft">Use the mobile number your parent invited.</p>
             <MobileStep value={mobile} onChange={(v) => { setMobile(v); setMismatch(false) }} onSubmit={() => (mobile === child.phone ? setPhase('otp') : setMismatch(true))} />
             {mismatch && <p role="alert" className="t-body rounded-xl bg-tomato/15 p-3">This invite was sent to +91 {formatMobile(child.phone ?? '')}. Use that number.</p>}
