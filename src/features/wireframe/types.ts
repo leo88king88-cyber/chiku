@@ -1,4 +1,9 @@
-import type { Jars } from '../../store/types'
+/** The wireframe storyboard keeps its original three-jar model; the live app moved to two balances. */
+export interface WireJars {
+  spend: number
+  save: number
+  share: number
+}
 
 export type PersonaKey = 'priya' | 'ananya'
 export type FlowKey = 'parent' | 'child'
@@ -21,8 +26,8 @@ export interface WireState {
   pocketLate: boolean
   avatar: string
   pocket: { amount: number; day: number; autopay: boolean }
-  jars: Jars
-  split: Jars
+  jars: WireJars
+  split: WireJars
   goal: WireGoal | null
   /** Waiting on the parent to fill in the price instead of the child. */
   askedParentForPrice: boolean

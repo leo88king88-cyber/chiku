@@ -36,15 +36,27 @@ export interface Child {
   phone?: string
   /** Own-phone children only: has completed the invite login on their own device. */
   loggedIn?: boolean
-  jars: Jars
-  /** Percent of each pocket-money drop that goes to each jar (sums to 100). */
-  split: Jars
+  /** What the child has: `spend` is available to spend now, `save` is kept for goals. */
+  money: Balances
+  /** Percent of each pocket-money drop that goes to `spend` and `save` (sums to 100). */
+  split: Balances
 }
 
-export interface Jars {
+export interface Balances {
   spend: number
   save: number
-  share: number
+}
+
+export type ChoreStatus = 'todo' | 'review' | 'paid'
+
+/** A task a parent sets for a child. Doing it and getting it approved pays `reward` into Can spend. */
+export interface Chore {
+  id: string
+  childId: string
+  title: string
+  reward: number
+  status: ChoreStatus
+  createdDay: number
 }
 
 export type GoalStatus = 'pendingParent' | 'active' | 'complete' | 'awaitingApproval' | 'purchased'
@@ -67,7 +79,7 @@ export interface Goal {
 export interface Txn {
   id: string
   childId: string
-  kind: 'pocket' | 'spend' | 'goal' | 'gift'
+  kind: 'pocket' | 'spend' | 'goal' | 'gift' | 'chore'
   /** Signed: positive adds money, negative removes it. */
   amount: number
   label: string

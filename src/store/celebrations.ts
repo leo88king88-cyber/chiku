@@ -1,8 +1,8 @@
 import { create } from 'zustand'
-import type { Jars } from './types'
+import type { Balances } from './types'
 
 export type CelebrationEvent = { id: string; childId: string } & (
-  | { kind: 'arrival'; label: string; parts: Jars }
+  | { kind: 'arrival'; label: string; parts: Balances }
   | { kind: 'milestone'; goalId: string; pct: number }
   | { kind: 'complete'; goalId: string }
 )

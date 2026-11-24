@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
-import { Navigate, Outlet, useBlocker } from 'react-router-dom'
+import { Navigate, Outlet, useBlocker, useLocation } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { hasOwnPhone, personas, type PersonaId } from '../../demo/personas'
 import { useActiveChild, useActivePersona, useStore } from '../../store'
+import { ChildNav } from './ChildNav'
+import { showsNav } from './showsNav'
 
 const bandOf = { kid: '8-11', teen: '12-14', pro: '15-17' } as const
 
@@ -17,6 +19,7 @@ export function ChildGate() {
   const children = useStore((s) => s.children)
   const setPersona = useStore((s) => s.setPersona)
   const load = useStore((s) => s.loadDemoFamily)
+  const { pathname } = useLocation()
 
   const blocker = useBlocker(({ historyAction, nextLocation }) => Boolean(child) && historyAction === 'POP' && !nextLocation.pathname.startsWith('/c/'))
   useEffect(() => {
@@ -24,7 +27,14 @@ export function ChildGate() {
   }, [blocker])
 
   if (child && hasOwnPhone(child) && !child.loggedIn) return <Navigate to="/c/notify" replace />
-  if (child) return <Outlet />
+  if (child) {
+    return (
+      <div className="flex flex-1 flex-col">
+        <div className="flex-1"><Outlet /></div>
+        {showsNav(pathname) && <ChildNav child={child} pathname={pathname} />}
+      </div>
+    )
+  }
 
   const switchable = (Object.keys(personas) as PersonaId[]).filter(
     (id) => personas[id].view === 'child' && children.some((c) => c.ageBand === bandOf[personas[id].band]),

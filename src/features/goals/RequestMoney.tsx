@@ -31,7 +31,7 @@ export function RequestMoney() {
   const send = () => {
     const full = note.trim() ? `${reason}: ${note.trim()}` : reason
     const res = requestMoney(child.id, amount, full)
-    toast(res === 'auto' ? `${formatINR(amount)} added to your Spend jar!` : `Asked ${parent} for ${formatINR(amount)}`)
+    toast(res === 'auto' ? `${formatINR(amount)} added to what you can spend!` : `Asked ${parent} for ${formatINR(amount)}`)
     navigate('/c/home')
   }
 

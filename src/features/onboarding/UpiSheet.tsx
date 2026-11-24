@@ -92,7 +92,7 @@ export function UpiSheet({
               </div>
             ))}
           </dl>
-          <p className="t-caption text-ink-soft">{note ?? `The money goes to ${childName}'s jars on the day.`} Pause or cancel anytime in {app.name}.</p>
+          <p className="t-caption text-ink-soft">{note ?? `The money goes to ${childName} on the day.`} Pause or cancel anytime in {app.name}.</p>
           <Button onClick={() => setStep('pin')} className="w-full">Approve</Button>
           <Button variant="ghost" onClick={() => setStep('apps')}>Back</Button>
         </div>

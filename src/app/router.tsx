@@ -27,6 +27,10 @@ const Join = screen(() => import('../features/onboarding/Join'), 'Join')
 const ParentHome = screen(() => import('../features/parent/ParentHome'), 'ParentHome')
 const Approvals = screen(() => import('../features/parent/Approvals'), 'Approvals')
 const ChildHome = screen(() => import('../features/goals/ChildHome'), 'ChildHome')
+const ChildGoals = screen(() => import('../features/goals/ChildGoals'), 'ChildGoals')
+const ChildTasks = screen(() => import('../features/goals/ChildTasks'), 'ChildTasks')
+const ChildSpend = screen(() => import('../features/goals/ChildSpend'), 'ChildSpend')
+const ParentTasks = screen(() => import('../features/parent/ParentTasks'), 'ParentTasks')
 const NewGoal = screen(() => import('../features/goals/NewGoal'), 'NewGoal')
 const NextGoal = screen(() => import('../features/goals/NewGoal'), 'NextGoal')
 const GoalDetail = screen(() => import('../features/goals/GoalDetail'), 'GoalDetail')
@@ -79,6 +83,7 @@ const routes: RouteObject[] = [
           { path: '/p/success', element: <Success /> },
           { path: '/p/home', element: <ParentHome /> },
           { path: '/p/approvals', element: <Approvals /> },
+          { path: '/p/tasks', element: <ParentTasks /> },
         ],
       },
       {
@@ -90,7 +95,10 @@ const routes: RouteObject[] = [
           { path: '/c/goal/:id', element: <GoalDetail /> },
           { path: '/c/goal/:id/done', element: <GoalDone /> },
           { path: '/c/request-money', element: <RequestMoney /> },
-          { path: '/c/insights', element: <Insights /> },
+          { path: '/c/goals', element: <ChildGoals /> },
+          { path: '/c/tasks', element: <ChildTasks /> },
+          { path: '/c/spend', element: <ChildSpend /> },
+          { path: '/c/activity', element: <Insights /> },
           { path: '/c/invest/sim', element: <SimHub /> },
           { path: '/c/invest/learn', element: <LearnHome /> },
           { path: '/c/invest/learn/:id', element: <LessonPage /> },

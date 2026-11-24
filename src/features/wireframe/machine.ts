@@ -1,5 +1,4 @@
-import type { Jars } from '../../store/types'
-import type { GoalPhase, WireEvent, WireState } from './types'
+import type { GoalPhase, WireEvent, WireJars, WireState } from './types'
 
 /**
  * Allowed goal-phase moves. Anything not listed is ignored, so the UI can never reach an
@@ -19,9 +18,9 @@ export const transitions: Record<GoalPhase, GoalPhase[]> = {
 
 export const canMove = (from: GoalPhase, to: GoalPhase) => transitions[from].includes(to)
 
-export const SPLIT_DEFAULT: Jars = { spend: 50, save: 40, share: 10 }
+export const SPLIT_DEFAULT: WireJars = { spend: 50, save: 40, share: 10 }
 
-export function splitAmount(amount: number, split: Jars): Jars {
+export function splitAmount(amount: number, split: WireJars): WireJars {
   const spend = Math.round((amount * split.spend) / 100)
   const share = Math.round((amount * split.share) / 100)
   return { spend, share, save: amount - spend - share }

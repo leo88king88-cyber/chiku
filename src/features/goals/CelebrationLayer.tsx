@@ -62,10 +62,10 @@ export function CelebrationLayer() {
               </div>
               <h2 className="t-display">{ev.label} is here!</h2>
               <p className="t-title t-money text-leaf-ink">
-                +{formatINR(ev.parts.spend + ev.parts.save + ev.parts.share)}
+                +{formatINR(ev.parts.spend + ev.parts.save)}
               </p>
               <div className="flex w-full justify-center gap-2">
-                {([['spend', 'Spend', 'tomato'], ['save', 'Save', 'leaf'], ['share', 'Share', 'sky']] as const).map(([k, label, c], i) => (
+                {([['spend', 'Can spend', 'tomato'], ['save', 'Saved', 'leaf']] as const).map(([k, label, c], i) => (
                   <motion.div
                     key={k}
                     initial={{ opacity: 0, y: 16 }}

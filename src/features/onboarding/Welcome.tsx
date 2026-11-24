@@ -6,7 +6,7 @@ import { useStore } from '../../store'
 import { OnboardingLayout } from './OnboardingLayout'
 
 const points = [
-  ['🫙', 'Pocket money that teaches', 'Save, spend and share, in jars they can see.'],
+  ['👛', 'Pocket money that teaches', 'Clear numbers: what they can spend, and what they have saved.'],
   ['🛡️', 'You stay in control', 'Limits, approvals and alerts. Set once, no nagging.'],
   ['📈', 'First real investment at 16+', 'Practise with pretend money, then a real SIP with your OK.'],
 ]

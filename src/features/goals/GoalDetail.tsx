@@ -7,6 +7,7 @@ import { Chiku } from '../../components/mascot/Chiku'
 import { formatINR } from '../../lib/money'
 import { useActiveChild, useActivePersona, useStore, splitAmount } from '../../store'
 import { ChildHeader } from './ChildHeader'
+import { SavingRate } from './SavingRate'
 
 export function GoalDetail() {
   const { id } = useParams()
@@ -20,8 +21,8 @@ export function GoalDetail() {
     return <Navigate to={`/c/goal/${goal.id}/done`} replace />
   }
   const kid = band === 'kid'
-  const saved = Math.min(child.jars.save, goal.target)
-  const left = Math.max(0, goal.target - child.jars.save)
+  const saved = Math.min(child.money.save, goal.target)
+  const left = Math.max(0, goal.target - child.money.save)
   const perDrop = child.pocketMoney ? splitAmount(child.pocketMoney.amount, child.split).save : 0
   const drops = perDrop > 0 ? Math.ceil(left / perDrop) : null
 
@@ -37,7 +38,7 @@ export function GoalDetail() {
         {goal.status === 'pendingParent' ? (
           <div className="sticker flex items-center gap-3 p-4 text-left">
             {kid && <Chiku size={64} />}
-            <p className="t-body">{parent} is filling in the price. We'll start filling your jar once it's set.</p>
+            <p className="t-body">{parent} is filling in the price. We'll start saving for it once it's set.</p>
           </div>
         ) : (
           <>
@@ -54,6 +55,7 @@ export function GoalDetail() {
             </p>
           </>
         )}
+        <SavingRate child={child} kid={kid} />
       </main>
     </div>
   )

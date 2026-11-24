@@ -116,7 +116,7 @@ export function Kyc() {
       <section className="sticker p-4">
         <h2 className="t-title">What this means for {child.name}</h2>
         <ul className="t-body mt-2 flex flex-col gap-2">
-          <li>✓ Goals, jars and pocket money work now</li>
+          <li>✓ Goals, tasks and pocket money work now</li>
           <li>✓ Practising with pretend money works now</li>
           <li>🔒 Real investing unlocks once you're verified</li>
         </ul>

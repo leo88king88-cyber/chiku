@@ -11,12 +11,22 @@ Sikka by Upmoney is a **separate app** from the existing investing app, Upmoney 
 | Flow | Who | What you see |
 |---|---|---|
 | 1. Parent onboarding and linking | Priya (parent) | A push notification on her lock screen (first screen), the Upmoney app with a Sikka banner, welcome, "what your child can and can never do", login with the Upmoney login (existing user, or new user with sign-up and a KYC form), add child (mobile number for 15+), guardian KYC (verified from the existing account, or pending/failed), age-based control presets (or skip for safe defaults), monthly pocket money via mock UPI AutoPay, success with a child invite, second-child shortcut |
-| 2. Savings goal | Aarav (9), Ananya (13), on Priya's phone | Spend/save/share jars, picture-grid goal creation (or "ask a parent to fill in"), pocket money arriving and filling the jar, milestone and goal-complete celebrations, parent purchase approval, "pick your next goal". Extra-money requests with a reason, and "ask again tomorrow" |
+| 2. Money, goals and tasks | Aarav (9), Ananya (13), on Priya's phone | A simple home that says what they have, split into **Can spend** and **Saved**; spending with the parent's limit; picture-grid goal creation (or "ask a parent to fill in"); pocket money arriving; milestone and goal-complete celebrations; parent purchase approval; **tasks** the parent sets that pay extra money when checked; an avatar they pick. Extra-money requests and "ask again tomorrow" |
 | 3. Simulated to real investing | Rohan (16), on his own phone | A message from his parent on his lock screen, his own login (mobile + OTP), practice with virtual ₹1,00,000 next to a **Learn** tab of 7 short lessons (what a mutual fund is, NAV and units, SIPs, index vs active funds, risk and the riskometer, costs, time and compounding), each with a diagram and a one-question check, fund pages, weekly recap, honest comparison against an index fund, risk quiz, real SIP request with simulator history attached, parent approval (UPI AutoPay) or structured decline (too risky / wait / smaller amount), resubmit, SIP confirmation, graduation-at-18 teaser |
+
+### How a child's screens are organised
+
+Children see one calm home screen and a bottom tab bar, instead of everything on one page.
+- **Home:** "You have ₹X", then two plain numbers: **Can spend** (ready to use today, with a Spend button) and **Saved** (kept safe for goals, opens the goal). Alerts such as a late payment or a waiting request appear on top, and there is one line for the next pocket money.
+- **Tabs:** Aarav sees Home, Goal and Tasks. Ananya also gets Activity (where her money went). Rohan gets Home, Goal, Tasks and Invest (Practice and Learn).
+- **Goal:** the goal and its progress. Teens choose how much of each pocket money they save; younger children are told the split their parent chose.
+- **Tasks:** jobs Priya sets. The child taps "I did it", Priya checks and pays, and the reward lands in Can spend.
+- **Spend:** pick what was bought and how much. It comes out of Can spend, within the monthly limit Priya set.
+- **Avatar:** tap the avatar at the top of Home to pick or change it.
 
 ### Phones and logins
 
-- **Priya's phone** is used by Priya, Aarav and Ananya. Children under 15 have no phone of their own. Priya's home is a family overview (jars, goals, pocket money, activity, what's waiting for her) with a card per child, and each child's page opens from there with **Open Aarav's page**. Inside a child's session, back never reaches Priya's screens (browser or in-app back is blocked from leaving the child area). The only way out is **Hand back to Priya**, behind her PIN (demo: any 4 digits).
+- **Priya's phone** is used by Priya, Aarav and Ananya. Children under 15 have no phone of their own. Priya's home is a family overview (totals, what's waiting for her, tasks) with a card per child showing three numbers (**Total**, **Spent** since the last pocket money, **Left**), the pocket money she pays, and recent spends. She adds tasks and pays them on a Tasks page, and each child's page opens from the card with **Open Aarav's page**. Inside a child's session, back never reaches Priya's screens (browser or in-app back is blocked from leaving the child area). The only way out is **Hand back to Priya**, behind her PIN (demo: any 4 digits).
 - **Rohan's phone** is separate. Children aged 15 to 17 get their own phone, so the parent enters their mobile number when adding them. Rohan opens the invite message, logs in with that number and an OTP (demo: any 6 digits), picks an avatar, and can **Log out**. The invite only works for the number it was sent to.
 - **Parent login:** the demo number `98765 43210` has an existing Upmoney account (KYC reused). Any other number is a new user: OTP, name, then a short KYC form (PAN in the right format plus DigiLocker consent). New KYC goes to "under review"; the demo links on that screen mark it verified or failed.
 
@@ -71,12 +81,12 @@ Setup: open the app and toolbar → **Reset demo data**. The first screen is Pri
 7. Controls: **Looks good**. Pocket money: ₹500 on the 1st → **Set up UPI AutoPay** → **PhonePe** → **Approve** → any 6-digit PIN.
 8. Success with the invite code → **Hand the phone to Aarav** → pick a buddy → **Let's go!** (Press back: it stays in Aarav's space.)
 
-**Part 2: Savings goal on Priya's phone (about 1:45)**
-9. Toolbar → **Load demo family**. Priya's home now shows the whole family: a strip to open each child, totals, what needs her, and a card per child.
-10. **Open Aarav's page** → **Pick a goal** → **Lego set** → **Yes, that's my goal!** → tap **←** to go home → scroll down and **Hand back to Priya** → PIN `1234`.
-11. On Aarav's card tap **Send ₹500 now** twice, then **Open Aarav's page**: coins fall, jars rise, then **You did it, Aarav!** → **See it!** → **Ask Priya to buy it** → **Back home** → **Hand back to Priya** (PIN). Priya lands on Approvals → **Approve purchase**.
-12. Dashboard → **Open Aarav's page**: "Approved!" → **Pick your next goal**. Hand back.
-13. **Open Ananya's page** (teen layout, split, "Where did my money go?") → **Request extra money** → ₹500 → **A gift** → **Send request** (lands on home) → **Hand back to Priya** (PIN). Priya: **Ask again tomorrow**. Hand to Ananya: locked button → **Demo: skip to tomorrow** → **Ask again**.
+**Part 2: Money, goals and tasks on Priya's phone (about 1:45)**
+9. Toolbar → **Load demo family**. Priya's home shows the whole family: a strip to open each child, totals, and a card per child with Total, Spent, Left, her monthly pocket money and recent spends.
+10. **Open Aarav's page**: "You have ₹1,650" split into **Can spend** and **Saved**. Tap the avatar at the top to pick one. Tap **Spend** → **Snacks** → ₹50 → **Spend ₹50**.
+11. **Tasks** tab → **Make my bed** → **I did it**. Back on **Home** scroll down → **Hand back to Priya** → PIN `1234`. Priya sees "tasks waiting" on Aarav's card → tap it → **Approve and pay**. Try **Add a task** too (pick a child, a task and a reward).
+12. **Open Aarav's page** → **Saved** tile → **Pick a goal** → **Lego set** → **Yes, that's my goal!** → hand back. On Aarav's card tap **Send ₹500 now** twice, then **Open Aarav's page**: coins fall, then **You did it, Aarav!** → **See it!** → **Ask Priya to buy it** → **Back home** → hand back. Priya lands on Approvals → **Approve purchase**. **Open Aarav's page** shows "Approved!".
+13. **Open Ananya's page** (teen layout, Activity tab, **Goal** tab with her saving rate) → **Ask for extra money** → ₹500 → **A gift** → **Send request** → hand back. Priya: **Ask again tomorrow**. Open Ananya's page: locked button → **Demo: skip to tomorrow** → **Ask again**.
 
 **Part 3: Rohan on his own phone (about 1:30)**
 14. Toolbar persona **Rohan** (his own phone, label above the phone changes): lock screen with a message from Priya → tap it → his number is prefilled → **Send OTP** → any 6 digits → pick a buddy → **Let's go!**

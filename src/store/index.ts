@@ -3,9 +3,10 @@ import { persist } from 'zustand/middleware'
 import { personas, type PersonaId } from '../demo/personas'
 import type { AgeBand } from '../theme/bands'
 import { useCelebrations, type CelebrationEvent } from './celebrations'
+import { moneySummary } from './money'
 import { controlPresets, pocketMoneySuggestion } from './presets'
 import { DEMO_MOBILE } from '../lib/brand'
-import type { Account, Child, Controls, DeclineReason, Goal, Guardian, Jars, PocketMoney, Request, RiskProfile, Sim, SimSnapshot, Sip, Txn } from './types'
+import type { Account, Child, Controls, DeclineReason, Goal, Balances, Chore, Guardian, PocketMoney, Request, RiskProfile, Sim, SimSnapshot, Sip, Txn } from './types'
 
 export type KycStatus = 'verified' | 'pending' | 'failed'
 
@@ -25,6 +26,7 @@ interface DemoState {
   sips: Sip[]
   /** Lesson ids each child has finished (Learn tab). */
   learned: Record<string, string[]>
+  chores: Chore[]
   /** Child currently being set up in the onboarding flow. */
   draftChildId: string | null
 }
@@ -46,7 +48,13 @@ interface DemoActions {
   setPocketMoney: (id: string, pm: PocketMoney | null) => void
   loadDemoFamily: () => void
   // Flow 2: savings goals
-  setSplit: (childId: string, split: Jars) => void
+  setSavingRate: (childId: string, savePercent: number) => void
+  spendMoney: (childId: string, amount: number, category: string, label: string) => 'ok' | 'insufficient' | 'limit'
+  addChore: (childId: string, title: string, reward: number) => void
+  completeChore: (id: string) => void
+  approveChore: (id: string) => void
+  sendBackChore: (id: string) => void
+  removeChore: (id: string) => void
   receivePocketMoney: (childId: string) => void
   addBonusToSave: (childId: string, amount: number) => void
   createGoal: (childId: string, t: { templateId: string; title: string; emoji: string; target: number; askParent: boolean }) => string
@@ -88,13 +96,14 @@ const initial: DemoState = {
   sims: {},
   sips: [],
   learned: {},
+  chores: [],
   draftChildId: null,
 }
 
-const defaultSplit: Record<AgeBand, Jars> = {
-  '8-11': { spend: 40, save: 50, share: 10 },
-  '12-14': { spend: 50, save: 40, share: 10 },
-  '15-17': { spend: 50, save: 40, share: 10 },
+const defaultSplit: Record<AgeBand, Balances> = {
+  '8-11': { spend: 50, save: 50 },
+  '12-14': { spend: 60, save: 40 },
+  '15-17': { spend: 60, save: 40 },
 }
 const uid = (p: string) => p + Math.random().toString(36).slice(2, 8)
 
@@ -109,15 +118,14 @@ function makeChild(name: string, ageBand: AgeBand, confirmed = false, phone?: st
     inviteCode: `SIKKA-${n.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 6)}-${Math.floor(1000 + Math.random() * 9000)}`,
     inviteStatus: 'sent',
     ...(phone ? { phone, loggedIn: false } : {}),
-    jars: { spend: 0, save: 0, share: 0 },
+    money: { spend: 0, save: 0 },
     split: defaultSplit[ageBand],
   }
 }
 
-export function splitAmount(amount: number, split: Jars): Jars {
-  const spend = Math.round((amount * split.spend) / 100)
-  const share = Math.round((amount * split.share) / 100)
-  return { spend, share, save: amount - spend - share }
+export function splitAmount(amount: number, split: Balances): Balances {
+  const save = Math.round((amount * split.save) / 100)
+  return { spend: amount - save, save }
 }
 
 /** The goal a child is currently working on or waiting on (at most one). */
@@ -126,17 +134,17 @@ export const currentGoalOf = (goals: Goal[], childId: string) =>
 
 const thresholdsReached = (saved: number, target: number) => [25, 50, 75, 100].filter((t) => (saved / target) * 100 >= t)
 
-/** Pure: apply a deposit to a child's jars and work out milestones. */
-function deposit(s: DemoState, childId: string, parts: Jars, label: string, kind: Txn['kind']) {
+/** Pure: add money to a child and work out milestones. */
+function deposit(s: DemoState, childId: string, parts: Balances, label: string, kind: Txn['kind']) {
   const child = s.children.find((c) => c.id === childId)
   if (!child) return null
-  const jars = { spend: child.jars.spend + parts.spend, save: child.jars.save + parts.save, share: child.jars.share + parts.share }
-  const total = parts.spend + parts.save + parts.share
+  const money = { spend: child.money.spend + parts.spend, save: child.money.save + parts.save }
+  const total = parts.spend + parts.save
   const events: CelebrationEvent[] = [{ id: uid('e_'), childId, kind: 'arrival', label, parts }]
   let goals = s.goals
   const goal = currentGoalOf(s.goals, childId)
   if (goal && goal.status === 'active') {
-    const reached = thresholdsReached(jars.save, goal.target)
+    const reached = thresholdsReached(money.save, goal.target)
     const fresh = reached.filter((t) => !goal.milestonesHit.includes(t))
     if (fresh.length) {
       const done = fresh.includes(100)
@@ -145,7 +153,7 @@ function deposit(s: DemoState, childId: string, parts: Jars, label: string, kind
     }
   }
   const patch: Partial<DemoState> = {
-    children: s.children.map((c) => (c.id === childId ? { ...c, jars } : c)),
+    children: s.children.map((c) => (c.id === childId ? { ...c, money } : c)),
     goals,
     transactions: [...s.transactions, { id: uid('t_'), childId, kind, amount: total, label, day: s.demoDayOffset }],
     ...(kind === 'pocket' ? { pocketMoneyLate: false } : {}),
@@ -153,11 +161,11 @@ function deposit(s: DemoState, childId: string, parts: Jars, label: string, kind
   return { patch, events }
 }
 
-/** Pure: mark a goal purchased and take its price out of the Save jar. */
+/** Pure: mark a goal purchased and take its price out of Saved. */
 function purchase(s: DemoState, goal: Goal): Partial<DemoState> {
   return {
     goals: s.goals.map((g) => (g.id === goal.id ? { ...g, status: 'purchased' } : g)),
-    children: s.children.map((c) => (c.id === goal.childId ? { ...c, jars: { ...c.jars, save: Math.max(0, c.jars.save - goal.target) } } : c)),
+    children: s.children.map((c) => (c.id === goal.childId ? { ...c, money: { ...c.money, save: Math.max(0, c.money.save - goal.target) } } : c)),
     transactions: [...s.transactions, { id: uid('t_'), childId: goal.childId, kind: 'goal', amount: -goal.target, label: goal.title, day: s.demoDayOffset }],
   }
 }
@@ -217,27 +225,38 @@ export const useStore = create<DemoState & DemoActions>()(
       loadDemoFamily: () => {
         useCelebrations.setState({ queue: [] })
         set(() => {
-          const mk = (n: string, b: AgeBand, jars: Jars, split = defaultSplit[b]) => ({
+          const mk = (n: string, b: AgeBand, money: Balances) => ({
             ...makeChild(n, b, true),
             inviteStatus: 'accepted' as const,
-            jars,
-            split,
+            money,
             pocketMoney: { ...pocketMoneySuggestion[b], mandate: 'active' as const, upiApp: 'PhonePe', vpa: guardian.upiId },
           })
-          const aarav = mk('Aarav', '8-11', { spend: 120, save: 1500, share: 30 })
-          const ananya = mk('Ananya', '12-14', { spend: 340, save: 1100, share: 60 }, { spend: 50, save: 40, share: 10 })
+          const aarav = mk('Aarav', '8-11', { spend: 150, save: 1500 })
+          const ananya = mk('Ananya', '12-14', { spend: 400, save: 1100 })
           // Rohan has his own phone, so the demo starts with his invite not yet accepted and no login.
-          const rohan = { ...mk('Rohan', '15-17', { spend: 500, save: 2000, share: 100 }), inviteStatus: 'sent' as const, phone: '9812345678', loggedIn: false }
-          const spends: [string, number, string, number][] = [
-            ['Snacks', 60, 'Samosa and chai with friends', -2],
-            ['Snacks', 90, 'Bubble tea', -5],
-            ['Games', 150, 'In-app game pass', -7],
-            ['Friends', 120, "Priyanka's birthday gift", -9],
-            ['Snacks', 70, 'Canteen lunch', -12],
-            ['Stationery', 80, 'Gel pens', -15],
-            ['Games', 100, 'Game top-up', -19],
-            ['Friends', 40, 'Share a cab', -23],
+          const rohan = { ...mk('Rohan', '15-17', { spend: 600, save: 2000 }), inviteStatus: 'sent' as const, phone: '9812345678', loggedIn: false }
+          const spend = (childId: string, category: string, amt: number, label: string, day: number) =>
+            ({ id: uid('t_'), childId, kind: 'spend' as const, amount: -amt, label, category, day })
+          const pocket = (childId: string, amt: number, day: number) =>
+            ({ id: uid('t_'), childId, kind: 'pocket' as const, amount: amt, label: 'Pocket money', day })
+          // Oldest first, with the last pocket money before the recent spends, so "spent since pocket money" reads right.
+          const transactions = [
+            spend(ananya.id, 'Friends', 40, 'Share a cab', -23),
+            spend(ananya.id, 'Games', 100, 'Game top-up', -19),
+            spend(ananya.id, 'Stationery', 80, 'Gel pens', -15),
+            spend(ananya.id, 'Snacks', 70, 'Canteen lunch', -12),
+            spend(ananya.id, 'Friends', 120, "Priyanka's birthday gift", -9),
+            spend(ananya.id, 'Games', 150, 'In-app game pass', -7),
+            pocket(aarav.id, 500, -6), pocket(ananya.id, 1500, -6), pocket(rohan.id, 2000, -6),
+            spend(aarav.id, 'Snacks', 40, 'Ice cream', -4),
+            spend(ananya.id, 'Snacks', 90, 'Bubble tea', -5),
+            spend(rohan.id, 'Sports', 150, 'Cricket nets', -3),
+            spend(ananya.id, 'Snacks', 60, 'Samosa and chai with friends', -2),
+            spend(aarav.id, 'Stationery', 30, 'Sticker pack', -1),
+            spend(rohan.id, 'Snacks', 80, 'Lunch with friends', -1),
           ]
+          const chore = (childId: string, title: string, reward: number, status: 'todo' | 'review' = 'todo') =>
+            ({ id: uid('k_'), childId, title, reward, status, createdDay: -2 })
           return {
             kycStatus: 'verified' as const,
             account: { loggedIn: true, mobile: DEMO_MOBILE, isNew: false, kycSubmitted: true },
@@ -259,16 +278,51 @@ export const useStore = create<DemoState & DemoActions>()(
             goals: [
               {
                 id: uid('g_'), childId: ananya.id, templateId: 'headphones', title: 'Headphones', emoji: '🎧', target: 2499,
-                status: 'active' as const, milestonesHit: thresholdsReached(ananya.jars.save, 2499), createdDay: -10,
+                status: 'active' as const, milestonesHit: thresholdsReached(ananya.money.save, 2499), createdDay: -10,
               },
             ],
-            transactions: spends.map(([category, amt, label, day]) => ({ id: uid('t_'), childId: ananya.id, kind: 'spend' as const, amount: -amt, label, category, day })),
+            transactions,
+            chores: [
+              chore(aarav.id, 'Make my bed', 20), chore(aarav.id, 'Water the plants', 30), chore(aarav.id, 'Tidy my toys', 30, 'review'),
+              chore(ananya.id, 'Help with dinner', 50), chore(ananya.id, 'Organise my study desk', 40),
+              chore(rohan.id, 'Wash the car', 100),
+            ],
           }
         })
       },
 
-      setSplit: (childId, split) =>
-        set((s) => ({ children: s.children.map((c) => (c.id === childId ? { ...c, split } : c)) })),
+      setSavingRate: (childId, savePercent) =>
+        set((s) => ({ children: s.children.map((c) => (c.id === childId ? { ...c, split: { spend: 100 - savePercent, save: savePercent } } : c)) })),
+
+      spendMoney: (childId, amount, category, label) => {
+        const s = get()
+        const child = s.children.find((c) => c.id === childId)
+        if (!child || amount > child.money.spend) return 'insufficient'
+        const { spent } = moneySummary(child, s.transactions, s.demoDayOffset)
+        if (spent + amount > child.controls.spendLimit) return 'limit'
+        set({
+          children: s.children.map((c) => (c.id === childId ? { ...c, money: { ...c.money, spend: c.money.spend - amount } } : c)),
+          transactions: [...s.transactions, { id: uid('t_'), childId, kind: 'spend', amount: -amount, label, category, day: s.demoDayOffset }],
+        })
+        return 'ok'
+      },
+
+      addChore: (childId, title, reward) =>
+        set((s) => ({ chores: [...s.chores, { id: uid('k_'), childId, title: title.trim(), reward, status: 'todo', createdDay: s.demoDayOffset }] })),
+      completeChore: (id) =>
+        set((s) => ({ chores: s.chores.map((k) => (k.id === id && k.status === 'todo' ? { ...k, status: 'review' as const } : k)) })),
+      sendBackChore: (id) =>
+        set((s) => ({ chores: s.chores.map((k) => (k.id === id && k.status === 'review' ? { ...k, status: 'todo' as const } : k)) })),
+      removeChore: (id) => set((s) => ({ chores: s.chores.filter((k) => k.id !== id) })),
+      approveChore: (id) => {
+        const s = get()
+        const chore = s.chores.find((k) => k.id === id)
+        if (!chore || chore.status !== 'review') return
+        const r = deposit(s, chore.childId, { spend: chore.reward, save: 0 }, `Task: ${chore.title}`, 'chore')
+        if (!r) return
+        set({ ...r.patch, chores: s.chores.map((k) => (k.id === id ? { ...k, status: 'paid' as const } : k)) })
+        useCelebrations.getState().push(r.events)
+      },
 
       receivePocketMoney: (childId) => {
         const s = get()
@@ -280,7 +334,7 @@ export const useStore = create<DemoState & DemoActions>()(
         useCelebrations.getState().push(r.events)
       },
       addBonusToSave: (childId, amount) => {
-        const r = deposit(get(), childId, { spend: 0, save: amount, share: 0 }, 'Birthday money', 'gift')
+        const r = deposit(get(), childId, { spend: 0, save: amount }, 'Gift', 'gift')
         if (!r) return
         set(r.patch)
         useCelebrations.getState().push(r.events)
@@ -290,7 +344,7 @@ export const useStore = create<DemoState & DemoActions>()(
         const s = get()
         const child = s.children.find((c) => c.id === childId)
         const id = uid('g_')
-        const saved = child?.jars.save ?? 0
+        const saved = child?.money.save ?? 0
         const reached = t.askParent ? [] : thresholdsReached(saved, t.target)
         const done = reached.includes(100)
         const goal: Goal = {
@@ -311,7 +365,7 @@ export const useStore = create<DemoState & DemoActions>()(
         const child = s.children.find((c) => c.id === childId)
         if (!child) return 'pending'
         if (amount <= child.controls.extraMoneyAbove) {
-          const r = deposit(s, childId, { spend: amount, save: 0, share: 0 }, `From ${s.guardian.name.split(' ')[0]}: ${reason}`, 'gift')
+          const r = deposit(s, childId, { spend: amount, save: 0 }, `From ${s.guardian.name.split(' ')[0]}: ${reason}`, 'gift')
           if (r) {
             set({ ...r.patch, requests: [...s.requests, { id: uid('r_'), childId, kind: 'money', amount, reason, status: 'approved', createdDay: s.demoDayOffset }] })
           }
@@ -350,7 +404,7 @@ export const useStore = create<DemoState & DemoActions>()(
           return
         }
         if (req.kind === 'money') {
-          const r = deposit(s, req.childId, { spend: req.amount, save: 0, share: 0 }, `From ${s.guardian.name.split(' ')[0]}: ${req.reason}`, 'gift')
+          const r = deposit(s, req.childId, { spend: req.amount, save: 0 }, `From ${s.guardian.name.split(' ')[0]}: ${req.reason}`, 'gift')
           if (r) {
             set({ ...r.patch, requests: setStatus('approved') })
             useCelebrations.getState().push(r.events)
@@ -363,7 +417,7 @@ export const useStore = create<DemoState & DemoActions>()(
           const child = s.children.find((c) => c.id === req.childId)
           if (!goal || !child) return
           const target = opts?.amount ?? goal.target
-          const reached = thresholdsReached(child.jars.save, target)
+          const reached = thresholdsReached(child.money.save, target)
           const done = reached.includes(100)
           set({
             goals: s.goals.map((g) => (g.id === goal.id ? { ...g, target, milestonesHit: reached, status: done ? 'complete' : 'active' } : g)),
@@ -445,7 +499,7 @@ export const useStore = create<DemoState & DemoActions>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 5,
+      version: 6,
       // Never let a corrupted or hand-edited saved state crash the app: fall back per field.
       merge: (persisted, current) => {
         const p = (persisted && typeof persisted === 'object' ? persisted : {}) as Partial<DemoState>
@@ -461,13 +515,23 @@ export const useStore = create<DemoState & DemoActions>()(
           sims: p.sims && typeof p.sims === 'object' ? p.sims : current.sims,
           account: p.account && typeof p.account === 'object' ? p.account : current.account,
           learned: p.learned && typeof p.learned === 'object' ? p.learned : current.learned,
+          chores: arr(p.chores, current.chores),
         }
       },
       migrate: (persisted) => {
         const p = { ...initial, ...(persisted as object) } as DemoState
         p.sims = p.sims ?? {}
         p.sips = p.sips ?? []
-        p.children = p.children.map((c) => ({ ...c, jars: c.jars ?? { spend: 0, save: 0, share: 0 }, split: c.split ?? defaultSplit[c.ageBand] }))
+        // v6: three jars (spend/save/share) became two balances. Share folds into Can spend.
+        p.chores = p.chores ?? []
+        p.children = p.children.map((c) => {
+          const old = c as unknown as { jars?: { spend?: number; save?: number; share?: number }; split?: { share?: number } }
+          const money = c.money ?? { spend: (old.jars?.spend ?? 0) + (old.jars?.share ?? 0), save: old.jars?.save ?? 0 }
+          const split = old.split && 'share' in old.split ? defaultSplit[c.ageBand] : (c.split ?? defaultSplit[c.ageBand])
+          const { jars: _drop, ...rest } = c as unknown as Record<string, unknown>
+          void _drop
+          return { ...(rest as unknown as Child), money, split }
+        })
         return p
       },
     },

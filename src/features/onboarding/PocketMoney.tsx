@@ -54,7 +54,7 @@ export function PocketMoney() {
         <p className="t-body">
           <b>{child.name}</b> gets <b className="t-money">{formatINR(amount)}</b> on the {ordinal(day)} of every month. First one on <b>{nextOccurrence(day)}</b>.
         </p>
-        <p className="t-caption mt-1 text-ink-soft">It splits into Spend, Save and Share jars. You can pause it anytime.</p>
+        <p className="t-caption mt-1 text-ink-soft">Part of it is for spending and part is saved for goals. You can pause it anytime.</p>
       </div>
 
       <UpiSheet

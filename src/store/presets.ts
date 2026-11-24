@@ -15,7 +15,7 @@ export const pocketMoneySuggestion: Record<AgeBand, { amount: number; dayOfMonth
 
 export const ageBandInfo: Record<AgeBand, { label: string; tag: string; blurb: string; emoji: string }> = {
   '8-11': { label: '8 to 11', tag: 'Little saver', blurb: 'Big pictures, a friendly mascot, almost no typing.', emoji: '🧒' },
-  '12-14': { label: '12 to 14', tag: 'Teen', blurb: 'Cleaner look, their own spend/save/share split.', emoji: '👧' },
+  '12-14': { label: '12 to 14', tag: 'Teen', blurb: 'Cleaner look, they choose how much to save.', emoji: '👧' },
   '15-17': { label: '15 to 17', tag: 'Almost grown-up', blurb: 'Near-adult app, real investing with your approval.', emoji: '🧑' },
 }
 
